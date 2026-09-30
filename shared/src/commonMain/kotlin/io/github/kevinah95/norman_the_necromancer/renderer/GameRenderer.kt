@@ -55,7 +55,7 @@ class GameRenderer {
         val tex = ctx.getTex(slice)
         val width = (w ?: slice.width.toDouble()).toFloat()
         val height = (h ?: slice.height.toDouble()).toFloat()
-        batch.drawQuad(tex, x.toFloat(), y.toFloat(), width, height)
+        batch.drawQuad(tex, x.toFloat(), y.toFloat(), width, height, filtering = false)
     }
 
     /**
@@ -132,7 +132,7 @@ class GameRenderer {
         if (dw <= 0 || dh <= 0) return
         val slice = bmp.sliceWithSize(sx, sy, sw, sh)
         val tex = ctx.getTex(slice)
-        batch.drawQuad(tex, dx.toFloat(), dy.toFloat(), dw.toFloat(), dh.toFloat())
+        batch.drawQuad(tex, dx.toFloat(), dy.toFloat(), dw.toFloat(), dh.toFloat(), filtering = false)
     }
 
     fun write(
@@ -153,7 +153,7 @@ class GameRenderer {
                 val slice = GameAtlas.glyphSlices[char]
                 if (slice != null) {
                     val tex = ctx.getTex(slice)
-                    batch.drawQuad(tex, cursorX.toFloat(), cursorY.toFloat(), GameAtlas.GLYPH_WIDTH.toFloat(), GameAtlas.GLYPH_HEIGHT.toFloat())
+                    batch.drawQuad(tex, cursorX.toFloat(), cursorY.toFloat(), GameAtlas.GLYPH_WIDTH.toFloat(), GameAtlas.GLYPH_HEIGHT.toFloat(), filtering = false)
                 }
                 cursorX += GameAtlas.getGlyphWidth(char)
             }

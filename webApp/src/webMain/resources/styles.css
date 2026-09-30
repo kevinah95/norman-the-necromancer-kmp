@@ -13,4 +13,8 @@ canvas {
     left: 0 !important;
     width: 100% !important;
     height: 100% !important;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: -webkit-crisp-edges;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
 }

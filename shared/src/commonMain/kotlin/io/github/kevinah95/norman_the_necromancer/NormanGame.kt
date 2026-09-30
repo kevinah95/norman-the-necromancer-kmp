@@ -6,6 +6,7 @@ import korlibs.korge.Korge
 import korlibs.korge.scene.sceneContainer
 import korlibs.math.geom.ScaleMode
 import korlibs.math.geom.Size
+import korlibs.render.GameWindow
 
 /**
  * Common entry point for Norman The Necromancer.
@@ -18,6 +19,7 @@ suspend fun launchNormanGame() {
         windowSize = Size(800, 400),
         title = "Norman The Necromancer",
         backgroundColor = Colors["#181622"],
+        quality = GameWindow.Quality.QUALITY,
         scaleMode = ScaleMode.SHOW_ALL
     ) {
         val sceneContainer = sceneContainer()
