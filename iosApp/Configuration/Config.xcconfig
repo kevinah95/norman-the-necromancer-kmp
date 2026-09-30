@@ -1,7 +1,7 @@
-TEAM_ID=
+TEAM_ID=9W786X2DCC
 
 PRODUCT_NAME=NormanTheNecromancer
-PRODUCT_BUNDLE_IDENTIFIER=io.github.kevinah95.norman_the_necromancer.NormanTheNecromancer$(TEAM_ID)
+PRODUCT_BUNDLE_IDENTIFIER=io.github.kevinah95.normanthenecromancer$(TEAM_ID)
 
 CURRENT_PROJECT_VERSION=1
 MARKETING_VERSION=1.0
