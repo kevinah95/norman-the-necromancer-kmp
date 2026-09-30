@@ -17,7 +17,7 @@ suspend fun launchNormanGame() {
         virtualSize = Size(400, 200),
         windowSize = Size(800, 400),
         title = "Norman The Necromancer",
-        backgroundColor = Colors["#000000"],
+        backgroundColor = Colors["#181622"],
         scaleMode = ScaleMode.SHOW_ALL
     ) {
         val sceneContainer = sceneContainer()
