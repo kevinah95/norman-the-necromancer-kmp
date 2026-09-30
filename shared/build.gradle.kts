@@ -38,7 +38,7 @@ kotlin {
        minSdk = libs.versions.android.minSdk.get().toInt()
     
        compilerOptions {
-           jvmTarget = JvmTarget.JVM_11
+           jvmTarget = JvmTarget.JVM_21
        }
        androidResources {
            enable = true
@@ -67,6 +67,7 @@ kotlin {
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
+            api("com.soywiz.korge:korge:6.0.0")
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

@@ -26,3 +26,12 @@ compose.desktop {
         }
     }
 }
+
+tasks.withType<JavaExec> {
+    jvmArgs(
+        "--add-opens=java.desktop/sun.java2d.opengl=ALL-UNNAMED",
+        "--add-opens=java.desktop/com.apple.eawt=ALL-UNNAMED",
+        "--add-opens=java.desktop/com.apple.eawt.event=ALL-UNNAMED",
+        "--add-opens=java.desktop/sun.awt=ALL-UNNAMED"
+    )
+}
