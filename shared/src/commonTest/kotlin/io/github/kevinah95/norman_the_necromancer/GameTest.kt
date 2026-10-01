@@ -19,6 +19,7 @@ class GameTest {
         assertTrue(GameAtlas.sprites.isNotEmpty())
         assertTrue(GameAtlas.getSprite("norman_arms_up") != null)
         assertTrue(GameAtlas.glyphSlices.isNotEmpty())
+        assertEquals(96, GameAtlas.glyphSlices.size)
     }
 
     @Test

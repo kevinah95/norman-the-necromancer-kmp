@@ -1,6 +1,7 @@
 package io.github.kevinah95.norman_the_necromancer.assets
 
 import korlibs.image.bitmap.Bitmap
+import korlibs.image.bitmap.Bitmap32
 import korlibs.image.bitmap.BmpSlice
 import korlibs.image.bitmap.sliceWithSize
 import korlibs.image.format.readBitmap
@@ -59,13 +60,29 @@ object GameAtlas {
             }
         }
 
-        // Slice glyphs from (0, 0) up to (160, 18)
-        // 32 glyphs per row, 3 rows = 96 glyphs (ASCII 32 to 127)
+        // Build a padded font atlas (1px transparent padding around each glyph)
+        // to prevent texture bleeding from adjacent glyphs and sprites on GPU scaling
+        val bmp32 = bitmap.toBMP32()
+        val pad = 1
+        val cellW = GLYPH_WIDTH + pad * 2 // 7
+        val cellH = GLYPH_HEIGHT + pad * 2 // 8
+        val fontBmp = Bitmap32(32 * cellW, 3 * cellH)
+
         for (i in 0 until 96) {
             val char = (32 + i).toChar()
-            val sx = (i % 32) * GLYPH_WIDTH
-            val sy = (i / 32) * GLYPH_HEIGHT
-            glyphSlices[char] = bitmap.sliceWithSize(sx, sy, GLYPH_WIDTH, GLYPH_HEIGHT, name = "glyph_$char")
+            val col = i % 32
+            val row = i / 32
+            val sx = col * GLYPH_WIDTH
+            val sy = row * GLYPH_HEIGHT
+            val dx = col * cellW + pad
+            val dy = row * cellH + pad
+
+            for (gy in 0 until GLYPH_HEIGHT) {
+                for (gx in 0 until GLYPH_WIDTH) {
+                    fontBmp.setRgba(dx + gx, dy + gy, bmp32.getRgba(sx + gx, sy + gy))
+                }
+            }
+            glyphSlices[char] = fontBmp.sliceWithSize(dx, dy, GLYPH_WIDTH, GLYPH_HEIGHT, name = "glyph_$char")
         }
     }
 
