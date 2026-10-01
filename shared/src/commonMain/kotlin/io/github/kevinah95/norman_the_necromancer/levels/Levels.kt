@@ -45,7 +45,7 @@ object LevelManager {
         else -> 0.0
     }
 
-    val levelScript: IntArray = intArrayOf(
+    private val defaultLevelScript: IntArray = intArrayOf(
         // Level 1
         4, ID_VILLAGER, END_OF_WAVE,
         4, ID_VILLAGER, END_OF_WAVE,
@@ -110,6 +110,9 @@ object LevelManager {
         1, ID_THE_KING, END_OF_LEVEL
     )
 
+    var levelScript: IntArray = defaultLevelScript.copyOf()
+        private set
+
     private var cursor: Int = 0
     private var timer: Double = 0.0
     private var currentGame: Game? = null
@@ -118,9 +121,12 @@ object LevelManager {
         currentGame = game
         cursor = 0
         timer = 0.0
+        levelScript = defaultLevelScript.copyOf()
     }
 
     fun isLevelFinished(): Boolean {
+        val game = currentGame ?: return false
+        if (game.state != GameState.PLAYING || game.player.hp <= 0) return false
         if (cursor >= levelScript.size) return true
         return levelScript[cursor] == END_OF_LEVEL && isCleared()
     }

@@ -34,6 +34,8 @@ fun createPlayer(): GameObject {
         }
         onDeathAction = {
             val game = gameSession as? Game
+            val c = center()
+            Fx.bones(c.x, c.y).burst(10)
             game?.state = GameState.LOSE
         }
     }

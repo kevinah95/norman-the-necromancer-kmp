@@ -31,6 +31,7 @@ class NormanGameScene : Scene() {
     private var touchAimActive = false
     private var dialogueTimer = 0.0
     private var normanIsBouncing = false
+    private var introCooldown = 0.0
 
     private val introDialogue = listOf(
         "Norman wasn't a particularly popular necromancer...",
@@ -84,23 +85,40 @@ class NormanGameScene : Scene() {
         }
         ShopManager.init(game)
         LevelManager.init(game)
+        TweenManager.reset()
         dialogueTimer = 0.0
         normanIsBouncing = false
         isPaused = false
+        touchAimActive = false
+        introCooldown = 500.0
         Fx.activeEmitters.clear()
         Fx.dust(game.stage.width, game.stage.height).burst(150)
     }
 
     private fun update(dtMs: Double) {
+        if (introCooldown > 0.0) {
+            introCooldown -= dtMs
+        }
         updateDialogue(dtMs)
         if (isPaused) return
 
         if (game.state == GameState.PLAYING) {
+            if (game.player.hp <= 0) {
+                onLose()
+                return
+            }
             LevelManager.updateLevel(dtMs)
+        } else if (game.state == GameState.LOSE) {
+            onLose()
+            return
         }
 
         if (game.state != GameState.INTRO) {
             game.update(dtMs)
+            if (game.state == GameState.LOSE || (game.state == GameState.PLAYING && game.player.hp <= 0)) {
+                onLose()
+                return
+            }
         }
 
         TweenManager.update(dtMs)
@@ -115,7 +133,7 @@ class NormanGameScene : Scene() {
             }
         }
 
-        if (game.level == 2 && !normanIsBouncing) {
+        if (game.level == 2 && !normanIsBouncing && game.state == GameState.PLAYING) {
             game.player.addBehaviour(March(game.player, 0.0))
             game.player.updateClock = 100.0
             game.player.updateSpeed = (60_000.0 / 240.0) * 2.0
@@ -127,6 +145,11 @@ class NormanGameScene : Scene() {
         game.state = GameState.WIN
         game.dialogue.clear()
         game.dialogue.addAll(outroDialogue)
+    }
+
+    private fun onLose() {
+        initGame()
+        GameAudio.useLevelSynths(game.level)
     }
 
     private fun updateDialogue(dtMs: Double) {
@@ -151,15 +174,16 @@ class NormanGameScene : Scene() {
 
             when (game.state) {
                 GameState.INTRO -> {
-                    game.state = GameState.PLAYING
-                    game.player.spriteName = "norman_arms_down"
-                    game.dialogue.clear()
-                    GameAudio.play()
-                    GameAudio.useLevelSynths(game.level)
+                    if (introCooldown <= 0.0) {
+                        game.state = GameState.PLAYING
+                        game.player.spriteName = "norman_arms_down"
+                        game.dialogue.clear()
+                        GameAudio.play()
+                        GameAudio.useLevelSynths(game.level)
+                    }
                 }
                 GameState.WIN, GameState.LOSE -> {
-                    initGame()
-                    GameAudio.useLevelSynths(game.level)
+                    onLose()
                 }
                 GameState.PLAYING -> {
                     // Check Pause button tap (top-right: x >= 370, y <= 25)
@@ -227,6 +251,14 @@ class NormanGameScene : Scene() {
             down(Key.SPACE) {
                 if (game.state == GameState.PLAYING && game.resurrect()) {
                     GameAudio.playResurrect()
+                } else if (game.state == GameState.INTRO && introCooldown <= 0.0) {
+                    game.state = GameState.PLAYING
+                    game.player.spriteName = "norman_arms_down"
+                    game.dialogue.clear()
+                    GameAudio.play()
+                    GameAudio.useLevelSynths(game.level)
+                } else if (game.state == GameState.WIN || game.state == GameState.LOSE) {
+                    onLose()
                 }
             }
             down(Key.P) {
@@ -241,6 +273,14 @@ class NormanGameScene : Scene() {
             down(Key.ENTER) {
                 if (game.state == GameState.SHOPPING && ShopManager.buyCurrent()) {
                     GameAudio.playBuy()
+                } else if (game.state == GameState.INTRO && introCooldown <= 0.0) {
+                    game.state = GameState.PLAYING
+                    game.player.spriteName = "norman_arms_down"
+                    game.dialogue.clear()
+                    GameAudio.play()
+                    GameAudio.useLevelSynths(game.level)
+                } else if (game.state == GameState.WIN || game.state == GameState.LOSE) {
+                    onLose()
                 }
             }
         }

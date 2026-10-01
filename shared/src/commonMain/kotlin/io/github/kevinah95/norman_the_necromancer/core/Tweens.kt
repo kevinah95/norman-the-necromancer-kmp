@@ -14,6 +14,11 @@ object TweenManager {
     val activeTweens: MutableList<Tween> = mutableListOf()
     var screenShakeTimer: Double = 0.0
 
+    fun reset() {
+        activeTweens.clear()
+        screenShakeTimer = 0.0
+    }
+
     fun screenshake(timeMs: Double) {
         screenShakeTimer = timeMs
     }

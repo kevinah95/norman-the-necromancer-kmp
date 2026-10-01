@@ -99,4 +99,45 @@ class GameTest {
         assertTrue(bought)
         assertEquals(initialSouls - cost, game.souls)
     }
+
+    @Test
+    fun testLevelScriptResetsOnInit() {
+        val player = createPlayer()
+        val game = Game().apply {
+            this.player = player
+            spawn(player)
+            state = GameState.PLAYING
+        }
+        LevelManager.init(game)
+        assertEquals(4, LevelManager.levelScript[0])
+
+        // Fast forward to spawn enemies and decrement count
+        for (i in 0 until 4) {
+            LevelManager.updateLevel(1000.0)
+        }
+        assertEquals(0, LevelManager.levelScript[0])
+
+        // Re-initializing LevelManager must restore original counts
+        LevelManager.init(game)
+        assertEquals(4, LevelManager.levelScript[0])
+    }
+
+    @Test
+    fun testIsLevelFinishedRequiresAlivePlayer() {
+        val player = createPlayer()
+        val game = Game().apply {
+            this.player = player
+            spawn(player)
+            state = GameState.PLAYING
+        }
+        LevelManager.init(game)
+
+        // Kill Norman
+        game.damage(player, 10)
+        assertEquals(0, player.hp)
+        assertEquals(GameState.LOSE, game.state)
+
+        // Even if no living enemies remain, isLevelFinished must be false when player is dead
+        assertTrue(!LevelManager.isLevelFinished())
+    }
 }
