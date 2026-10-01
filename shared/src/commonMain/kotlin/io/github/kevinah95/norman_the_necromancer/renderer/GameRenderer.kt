@@ -164,6 +164,38 @@ class GameRenderer {
         }
     }
 
+    fun getTextWidth(text: String): Double {
+        var maxW = 0.0
+        var curW = 0.0
+        for (char in text) {
+            if (char == '\n') {
+                if (curW > maxW) maxW = curW
+                curW = 0.0
+            } else {
+                curW += GameAtlas.getGlyphWidth(char)
+            }
+        }
+        return if (curW > maxW) curW else maxW
+    }
+
+    fun writeCentered(
+        batch: BatchBuilder2D,
+        ctx: RenderContext,
+        text: String,
+        centerY: Double,
+        lineSpacing: Double = 11.0
+    ) {
+        val lines = text.split('\n')
+        val totalHeight = (lines.size - 1) * lineSpacing + GameAtlas.GLYPH_HEIGHT
+        var startY = centerY - totalHeight / 2.0
+        for (line in lines) {
+            val width = getTextWidth(line)
+            val startX = (400.0 - width) / 2.0
+            write(batch, ctx, line, startX, startY)
+            startY += lineSpacing
+        }
+    }
+
     private fun drawBackground(
         batch: BatchBuilder2D,
         ctx: RenderContext,
@@ -284,7 +316,7 @@ class GameRenderer {
         game: Game,
         isPaused: Boolean
     ) {
-        if (game.state == GameState.INTRO) return
+        if (game.state == GameState.INTRO || game.state == GameState.WIN) return
 
         // Norman icon
         drawSprite(batch, ctx, "norman_icon", 2.0, 2.0)
@@ -394,11 +426,21 @@ class GameRenderer {
         ctx: RenderContext,
         game: Game
     ) {
-        if (game.dialogue.isNotEmpty()) {
-            val line = game.dialogue[0]
+        if (game.dialogue.isEmpty()) return
+        val currentText = game.dialogue[0]
+
+        if (game.state == GameState.WIN) {
+            // Draw centered dialogue / credits text cleanly without background frame
+            writeCentered(batch, ctx, currentText, 70.0, lineSpacing = 12.0)
+
+            // Draw tap hint below text
+            val hintText = if (game.dialogue.size > 1) "(Tap to continue)" else "(Tap anywhere to play again)"
+            val hintW = getTextWidth(hintText)
+            write(batch, ctx, hintText, (400.0 - hintW) / 2.0, 110.0)
+        } else {
             val textX = 65.0
             val textY = 70.0
-            write(batch, ctx, line, textX, textY)
+            write(batch, ctx, currentText, textX, textY)
             if (game.state == GameState.INTRO) {
                 write(batch, ctx, "(Tap screen to skip)", 140.0, 95.0)
             }

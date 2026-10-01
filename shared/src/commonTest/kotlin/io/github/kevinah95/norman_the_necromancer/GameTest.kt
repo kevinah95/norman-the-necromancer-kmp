@@ -213,4 +213,45 @@ class GameTest {
         // Spell should despawn on collision with enemy
         assertTrue(spell !in game.objects)
     }
+
+    @Test
+    fun testTextWidthCalculation() = suspendTest {
+        GameAtlas.load()
+        val renderer = io.github.kevinah95.norman_the_necromancer.renderer.GameRenderer()
+        val singleLineWidth = renderer.getTextWidth("THE END")
+        assertTrue(singleLineWidth > 0.0)
+
+        val multiLineWidth = renderer.getTextWidth("Original Game by Dan Prince\nCreated for JS13k Games 2022\ndanthedev.com")
+        assertTrue(multiLineWidth >= singleLineWidth)
+    }
+
+    @Test
+    fun testOutroDialogueSequence() {
+        val outroDialogue = listOf(
+            "It was over.",
+            "Norman was able to study peacefully.",
+            "But he knew that eventually, they'd be back.",
+            "THE END",
+            "Original Game by Dan Prince\nCreated for JS13k Games 2022\ndanthedev.com",
+            "Thanks for playing!"
+        )
+
+        val game = Game().apply {
+            state = GameState.WIN
+            dialogue.addAll(outroDialogue)
+        }
+
+        assertEquals(6, game.dialogue.size)
+        assertEquals("It was over.", game.dialogue[0])
+
+        // Advance through dialogue
+        while (game.dialogue.size > 1) {
+            game.dialogue.removeAt(0)
+        }
+
+        // Final screen remains
+        assertEquals(1, game.dialogue.size)
+        assertEquals("Thanks for playing!", game.dialogue[0])
+    }
 }
+

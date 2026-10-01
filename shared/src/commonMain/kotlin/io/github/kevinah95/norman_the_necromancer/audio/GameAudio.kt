@@ -75,6 +75,15 @@ object GameAudio {
         s.targetKickVol = 0.0f
     }
 
+    fun useOutroSynths() {
+        val s = musicStream ?: return
+        // Outro: peaceful ambient organ drone without battle drums or boss themes
+        s.targetKingVol = 0.0f
+        s.targetKickVol = 0.0f
+        s.targetBassVol = 0.0f
+        s.targetOrganVol = 0.45f
+    }
+
     fun onKingPhase4() {
         val s = musicStream ?: return
         // Kick re-enters during King Phase 4

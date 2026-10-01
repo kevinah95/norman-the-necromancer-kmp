@@ -32,6 +32,7 @@ class NormanGameScene : Scene() {
     private var dialogueTimer = 0.0
     private var normanIsBouncing = false
     private var introCooldown = 0.0
+    private var outroCooldown = 0.0
 
     private val introDialogue = listOf(
         "Norman wasn't a particularly popular necromancer...",
@@ -46,7 +47,9 @@ class NormanGameScene : Scene() {
         "It was over.",
         "Norman was able to study peacefully.",
         "But he knew that eventually, they'd be back.",
-        "THE END! (Tap to play again)"
+        "THE END",
+        "Original Game by Dan Prince\nCreated for JS13k Games 2022\ndanthedev.com",
+        "Thanks for playing!"
     )
 
     override suspend fun SContainer.sceneMain() {
@@ -91,6 +94,7 @@ class NormanGameScene : Scene() {
         isPaused = false
         touchAimActive = false
         introCooldown = 500.0
+        outroCooldown = 0.0
         Fx.activeEmitters.clear()
         Fx.dust(game.stage.width, game.stage.height).burst(150)
     }
@@ -98,6 +102,9 @@ class NormanGameScene : Scene() {
     private fun update(dtMs: Double) {
         if (introCooldown > 0.0) {
             introCooldown -= dtMs
+        }
+        if (outroCooldown > 0.0) {
+            outroCooldown -= dtMs
         }
         updateDialogue(dtMs)
         if (isPaused) return
@@ -113,7 +120,7 @@ class NormanGameScene : Scene() {
             return
         }
 
-        if (game.state != GameState.INTRO) {
+        if (game.state != GameState.INTRO && game.state != GameState.WIN) {
             game.update(dtMs)
             if (game.state == GameState.LOSE || (game.state == GameState.PLAYING && game.player.hp <= 0)) {
                 onLose()
@@ -145,6 +152,13 @@ class NormanGameScene : Scene() {
         game.state = GameState.WIN
         game.dialogue.clear()
         game.dialogue.addAll(outroDialogue)
+        outroCooldown = 1500.0
+        dialogueTimer = 0.0
+        touchAimActive = false
+        isPaused = false
+        game.player.hop = 0.0
+        game.player.spriteName = "norman_arms_down"
+        GameAudio.useOutroSynths()
     }
 
     private fun onLose() {
@@ -154,13 +168,20 @@ class NormanGameScene : Scene() {
 
     private fun updateDialogue(dtMs: Double) {
         dialogueTimer += dtMs
-        if (dialogueTimer > 4000.0) {
+        val limit = if (game.state == GameState.WIN) 8000.0 else 4000.0
+        if (dialogueTimer > limit) {
             dialogueTimer = 0.0
-            if (game.dialogue.isNotEmpty()) {
-                game.dialogue.removeAt(0)
-            }
-            if (game.state == GameState.INTRO && game.dialogue.isEmpty()) {
-                game.dialogue.add("                (Tap to begin)")
+            if (game.state == GameState.WIN) {
+                if (game.dialogue.size > 1) {
+                    game.dialogue.removeAt(0)
+                }
+            } else {
+                if (game.dialogue.isNotEmpty()) {
+                    game.dialogue.removeAt(0)
+                }
+                if (game.state == GameState.INTRO && game.dialogue.isEmpty()) {
+                    game.dialogue.add("                (Tap to begin)")
+                }
             }
         }
     }
@@ -190,7 +211,18 @@ class NormanGameScene : Scene() {
                         GameAudio.useLevelSynths(game.level)
                     }
                 }
-                GameState.WIN, GameState.LOSE -> {
+                GameState.WIN -> {
+                    if (outroCooldown <= 0.0) {
+                        if (game.dialogue.size > 1) {
+                            game.dialogue.removeAt(0)
+                            dialogueTimer = 0.0
+                            outroCooldown = 250.0
+                        } else {
+                            onLose()
+                        }
+                    }
+                }
+                GameState.LOSE -> {
                     onLose()
                 }
                 GameState.PLAYING -> {
@@ -280,7 +312,17 @@ class NormanGameScene : Scene() {
                     game.dialogue.clear()
                     GameAudio.play()
                     GameAudio.useLevelSynths(game.level)
-                } else if (game.state == GameState.WIN || game.state == GameState.LOSE) {
+                } else if (game.state == GameState.WIN) {
+                    if (outroCooldown <= 0.0) {
+                        if (game.dialogue.size > 1) {
+                            game.dialogue.removeAt(0)
+                            dialogueTimer = 0.0
+                            outroCooldown = 250.0
+                        } else {
+                            onLose()
+                        }
+                    }
+                } else if (game.state == GameState.LOSE) {
                     onLose()
                 }
             }
@@ -307,7 +349,17 @@ class NormanGameScene : Scene() {
                     game.dialogue.clear()
                     GameAudio.play()
                     GameAudio.useLevelSynths(game.level)
-                } else if (game.state == GameState.WIN || game.state == GameState.LOSE) {
+                } else if (game.state == GameState.WIN) {
+                    if (outroCooldown <= 0.0) {
+                        if (game.dialogue.size > 1) {
+                            game.dialogue.removeAt(0)
+                            dialogueTimer = 0.0
+                            outroCooldown = 250.0
+                        } else {
+                            onLose()
+                        }
+                    }
+                } else if (game.state == GameState.LOSE) {
                     onLose()
                 }
             }
