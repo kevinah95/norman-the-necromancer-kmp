@@ -48,8 +48,7 @@ class NormanGameScene : Scene() {
         "Norman was able to study peacefully.",
         "But he knew that eventually, they'd be back.",
         "THE END",
-        "Original Game by Dan Prince\nCreated for JS13k Games 2022\ndanthedev.com",
-        "Thanks for playing!"
+        "Original Game by Dan Prince\nCreated for JS13k Games 2022\ndanthedev.com\n\nThanks for playing!"
     )
 
     override suspend fun SContainer.sceneMain() {
@@ -235,6 +234,12 @@ class NormanGameScene : Scene() {
                         return@onDown
                     }
 
+                    // Debug shortcut: Tap the level counter (e.g. "1-10") in the top bar to trigger victory screen immediately
+                    if (px in 295.0..335.0 && py in 5.0..25.0) {
+                        onWin()
+                        return@onDown
+                    }
+
                     // Check Resurrect button tap:
                     // Button is rendered at x = 140..260, y = 158..173.
                     // Hit box (px in 130.0..270.0 && py in 150.0..178.0) is elevated safely above the iOS Home Indicator (y > 180).
@@ -333,6 +338,10 @@ class NormanGameScene : Scene() {
             down(Key.ESCAPE) {
                 isPaused = !isPaused
                 if (isPaused) touchAimActive = false
+            }
+            down(Key.W) {
+                // Debug shortcut: Press 'W' to trigger victory screen immediately
+                onWin()
             }
             down(Key.UP) {
                 if (game.state == GameState.SHOPPING) ShopManager.selectIndex(-1)

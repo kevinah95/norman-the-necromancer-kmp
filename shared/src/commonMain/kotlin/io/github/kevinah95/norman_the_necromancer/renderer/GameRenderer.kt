@@ -431,12 +431,12 @@ class GameRenderer {
 
         if (game.state == GameState.WIN) {
             // Draw centered dialogue / credits text cleanly without background frame
-            writeCentered(batch, ctx, currentText, 70.0, lineSpacing = 12.0)
+            writeCentered(batch, ctx, currentText, 66.0, lineSpacing = 11.0)
 
             // Draw tap hint below text
             val hintText = if (game.dialogue.size > 1) "(Tap to continue)" else "(Tap anywhere to play again)"
             val hintW = getTextWidth(hintText)
-            write(batch, ctx, hintText, (400.0 - hintW) / 2.0, 110.0)
+            write(batch, ctx, hintText, (400.0 - hintW) / 2.0, 116.0)
         } else {
             val textX = 65.0
             val textY = 70.0

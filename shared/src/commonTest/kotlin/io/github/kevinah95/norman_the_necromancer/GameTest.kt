@@ -232,8 +232,7 @@ class GameTest {
             "Norman was able to study peacefully.",
             "But he knew that eventually, they'd be back.",
             "THE END",
-            "Original Game by Dan Prince\nCreated for JS13k Games 2022\ndanthedev.com",
-            "Thanks for playing!"
+            "Original Game by Dan Prince\nCreated for JS13k Games 2022\ndanthedev.com\n\nThanks for playing!"
         )
 
         val game = Game().apply {
@@ -241,7 +240,7 @@ class GameTest {
             dialogue.addAll(outroDialogue)
         }
 
-        assertEquals(6, game.dialogue.size)
+        assertEquals(5, game.dialogue.size)
         assertEquals("It was over.", game.dialogue[0])
 
         // Advance through dialogue
@@ -249,9 +248,10 @@ class GameTest {
             game.dialogue.removeAt(0)
         }
 
-        // Final screen remains
+        // Final screen remains with credits and Thanks for playing
         assertEquals(1, game.dialogue.size)
-        assertEquals("Thanks for playing!", game.dialogue[0])
+        assertTrue(game.dialogue[0].contains("Dan Prince"))
+        assertTrue(game.dialogue[0].contains("Thanks for playing!"))
     }
 }
 
