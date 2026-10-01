@@ -141,4 +141,76 @@ class GameTest {
         // Even if no living enemies remain, isLevelFinished must be false when player is dead
         assertTrue(!LevelManager.isLevelFinished())
     }
+
+    @Test
+    fun testPlayerSpellsDoNotDamageResurrectedSkeletons() {
+        val player = createPlayer()
+        val game = Game().apply {
+            this.player = player
+            spawn(player)
+            state = GameState.PLAYING
+        }
+        val skeleton = createSkeleton().apply {
+            x = 50.0
+            y = 0.0
+        }
+        game.spawn(skeleton)
+
+        val spell = createSpell().apply {
+            x = 50.0
+            y = 0.0
+            vx = 10.0
+            vy = 0.0
+        }
+        game.spawn(spell)
+
+        // Ensure both overlap
+        assertTrue(spell.bounds().overlaps(skeleton.bounds()))
+
+        // Simulate game step
+        game.update(16.0)
+
+        // Resurrected skeleton should NOT take damage or die
+        assertEquals(1, skeleton.hp)
+        assertTrue(skeleton in game.objects)
+
+        // Spell should NOT despawn on collision with the skeleton
+        assertTrue(spell in game.objects)
+    }
+
+    @Test
+    fun testPlayerSpellsDamageLivingEnemies() {
+        val player = createPlayer()
+        val game = Game().apply {
+            this.player = player
+            spawn(player)
+            state = GameState.PLAYING
+        }
+        val villager = createVillager().apply {
+            x = 50.0
+            y = 0.0
+            hp = 1
+        }
+        game.spawn(villager)
+
+        val spell = createSpell().apply {
+            x = 50.0
+            y = 0.0
+            vx = 10.0
+            vy = 0.0
+        }
+        game.spawn(spell)
+
+        assertTrue(spell.bounds().overlaps(villager.bounds()))
+
+        // Simulate game step
+        game.update(16.0)
+
+        // Living enemy should be damaged and killed
+        assertEquals(0, villager.hp)
+        assertTrue(villager !in game.objects)
+
+        // Spell should despawn on collision with enemy
+        assertTrue(spell !in game.objects)
+    }
 }

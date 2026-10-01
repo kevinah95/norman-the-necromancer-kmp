@@ -48,7 +48,7 @@ fun createSpell(): GameObject {
         spriteWidth = 4
         spriteHeight = 4
         tags = Tags.SPELL
-        collisionMask = Tags.MOBILE or Tags.LIVING
+        collisionMask = Tags.LIVING
         mass = 100.0
         emitter = Fx.trail()
         friction = 0.1

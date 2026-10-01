@@ -268,21 +268,10 @@ class GameRenderer {
         game: Game,
         shakeX: Double,
         shakeY: Double,
-        touchAimActive: Boolean
+        touchAimActive: Boolean = false
     ) {
         val pt = game.getCastingPoint()
         drawSceneSprite(batch, ctx, "reticle", pt.x - 3.5, pt.y - 3.5, shakeX, shakeY)
-
-        // Trajectory / aiming guide (dots along trajectory)
-        if (touchAimActive) {
-            val (vx, vy) = vectorFromAngle(game.spell.targetAngle)
-            val center = game.player.center()
-            for (d in 25..120 step 15) {
-                val dotX = center.x + vx * d
-                val dotY = center.y + vy * d
-                drawSceneSprite(batch, ctx, "p_green_1", dotX, dotY, shakeX, shakeY)
-            }
-        }
     }
 
     private fun drawHud(

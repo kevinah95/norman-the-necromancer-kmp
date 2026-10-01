@@ -15,7 +15,7 @@ El juego está completamente encapsulado en el módulo compartido `:shared` (`co
 El juego original en TypeScript/HTML5 estaba diseñado para ratón y teclado (apuntado con cursor de mouse, barra espaciadora para Resurrección y teclado numérico/flechas para la tienda). Esta versión KMP fue optimizada para pantallas táctiles y móviles sin perder la experiencia de escritorio:
 
 1. **Aiming & Shooting Táctil**:
-   - Al tocar y arrastrar en la pantalla, se calcula la trayectoria angular respecto a Norman y se proyecta una guía visual de disparo (retícula + puntos de trayectoria).
+   - Al tocar y arrastrar en la pantalla, se calcula la trayectoria angular respecto a Norman y se orienta la retícula de disparo.
    - Al levantar el dedo (`onUp`), se lanza el proyectil.
 2. **Botón de Resurrección Táctil**:
    - Botón ergonómico en la parte inferior con marco dinámico, tiempo de recarga visible en segundos e icono indicador de listo.
