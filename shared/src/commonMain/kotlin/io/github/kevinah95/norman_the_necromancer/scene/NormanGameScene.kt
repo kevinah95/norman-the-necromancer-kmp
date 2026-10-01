@@ -168,9 +168,17 @@ class NormanGameScene : Scene() {
     private fun SContainer.setupInput() {
         // Touch / pointer down
         onDown { evt ->
-            val pos = evt.currentPosLocal
-            val px = pos.x
-            val py = pos.y
+            val posStage = evt.currentPosStage
+            val posLocal = evt.currentPosLocal
+            val px = if (posStage.x.isFinite()) posStage.x else posLocal.x
+            val py = if (posStage.y.isFinite()) posStage.y else posLocal.y
+
+            if (isPaused) {
+                // If game is paused, ANY tap on screen (or on the Resume button) unpauses the game cleanly!
+                isPaused = false
+                touchAimActive = false
+                return@onDown
+            }
 
             when (game.state) {
                 GameState.INTRO -> {
@@ -186,14 +194,19 @@ class NormanGameScene : Scene() {
                     onLose()
                 }
                 GameState.PLAYING -> {
-                    // Check Pause button tap (top-right: x >= 370, y <= 25)
-                    if (px >= 370.0 && py <= 25.0) {
-                        isPaused = !isPaused
+                    // Check Pause button tap:
+                    // Button is rendered at x = 346..392, y = 8..26.
+                    // Hit box (px in 335.0..398.0 && py in 5.0..32.0) is centered directly on the button.
+                    if (px in 335.0..398.0 && py in 5.0..32.0) {
+                        isPaused = true
+                        touchAimActive = false
                         return@onDown
                     }
 
-                    // Check Resurrect button tap (bottom center: x in 130..270, y in 170..200)
-                    if (px in 130.0..270.0 && py in 170.0..200.0) {
+                    // Check Resurrect button tap:
+                    // Button is rendered at x = 140..260, y = 158..173.
+                    // Hit box (px in 130.0..270.0 && py in 150.0..178.0) is elevated safely above the iOS Home Indicator (y > 180).
+                    if (px in 130.0..270.0 && py in 150.0..178.0) {
                         if (game.resurrect()) {
                             GameAudio.playResurrect()
                         }
@@ -227,9 +240,11 @@ class NormanGameScene : Scene() {
 
         // Pointer move / dragging to aim
         onMove { evt ->
-            val pos = evt.currentPosLocal
-            val px = pos.x
-            val py = pos.y
+            if (isPaused) return@onMove
+            val posStage = evt.currentPosStage
+            val posLocal = evt.currentPosLocal
+            val px = if (posStage.x.isFinite()) posStage.x else posLocal.x
+            val py = if (posStage.y.isFinite()) posStage.y else posLocal.y
 
             if (game.state == GameState.PLAYING) {
                 updateAimAngle(px, py)
@@ -238,6 +253,10 @@ class NormanGameScene : Scene() {
 
         // Pointer up / releasing to fire spell!
         onUp {
+            if (isPaused) {
+                touchAimActive = false
+                return@onUp
+            }
             if (game.state == GameState.PLAYING && touchAimActive) {
                 touchAimActive = false
                 if (game.castSpell()) {
@@ -249,6 +268,10 @@ class NormanGameScene : Scene() {
         // Desktop keyboard controls
         keys {
             down(Key.SPACE) {
+                if (isPaused) {
+                    isPaused = false
+                    return@down
+                }
                 if (game.state == GameState.PLAYING && game.resurrect()) {
                     GameAudio.playResurrect()
                 } else if (game.state == GameState.INTRO && introCooldown <= 0.0) {
@@ -263,6 +286,11 @@ class NormanGameScene : Scene() {
             }
             down(Key.P) {
                 isPaused = !isPaused
+                if (isPaused) touchAimActive = false
+            }
+            down(Key.ESCAPE) {
+                isPaused = !isPaused
+                if (isPaused) touchAimActive = false
             }
             down(Key.UP) {
                 if (game.state == GameState.SHOPPING) ShopManager.selectIndex(-1)

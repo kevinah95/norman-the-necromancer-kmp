@@ -40,6 +40,10 @@ class GameRenderer {
         }
 
         drawDialogue(batch, ctx, game)
+
+        if (isPaused) {
+            drawPauseOverlay(batch, ctx)
+        }
     }
 
     fun drawSprite(
@@ -304,28 +308,54 @@ class GameRenderer {
         write(batch, ctx, "$$soulsInt$bonus", 170.0, 3.0)
 
         // Level
-        write(batch, ctx, "${game.level + 1}-10", 355.0, 3.0)
+        write(batch, ctx, "${game.level + 1}-10", 305.0, 14.0)
 
-        // Pause indicator / touch button
-        val pauseText = if (isPaused) "[PAUSED]" else "||"
-        write(batch, ctx, pauseText, 385.0, 3.0)
+        // Pause button (mobile & iOS touch-safe: lower down and clearly clickable)
+        val pauseBtnX = 346.0
+        val pauseBtnY = 8.0
+        val pauseBtnW = 46.0
+        val pauseBtnH = 18.0
+        drawNineSlice(batch, ctx, "pink_frame", pauseBtnX, pauseBtnY, pauseBtnW, pauseBtnH)
+        val pauseLabel = if (isPaused) "PLAY" else "PAUSE"
+        val labelOffset = if (isPaused) 12.0 else 8.0
+        write(batch, ctx, pauseLabel, pauseBtnX + labelOffset, pauseBtnY + 6.0)
 
-        // Resurrect Button (Mobile touch-friendly + Desktop)
+        // Resurrect Button (Mobile touch-friendly + Desktop: elevated safely above iOS Home Indicator)
         if (game.state == GameState.PLAYING) {
             val bx = 140.0
-            val by = 184.0
+            val by = 158.0
             val bw = 120.0
-            val bh = 14.0
+            val bh = 15.0
             val progress = clamp(game.ability.timer / game.ability.cooldown, 0.0, 1.0)
             val fillW = (bw * (1.0 - progress)).toInt()
 
             drawNineSlice(batch, ctx, "pink_frame", bx, by, fillW.toDouble(), bh)
-            drawSprite(batch, ctx, "skull", bx + 2.0, by + 3.0)
+            drawSprite(batch, ctx, "skull", bx + 2.0, by + 4.0)
 
             val ready = progress >= 1.0
             val label = if (ready) "RESURRECT (TAP/SPACE)" else "Resurrect (${((1.0 - progress) * game.ability.cooldown / 1000).toInt()}s)"
-            write(batch, ctx, label, bx + 12.0, by + 4.0)
+            write(batch, ctx, label, bx + 12.0, by + 5.0)
         }
+    }
+
+    private fun drawPauseOverlay(
+        batch: BatchBuilder2D,
+        ctx: RenderContext
+    ) {
+        val modalW = 160.0
+        val modalH = 68.0
+        val modalX = (400.0 - modalW) / 2.0
+        val modalY = (200.0 - modalH) / 2.0
+
+        drawNineSlice(batch, ctx, "pink_frame", modalX, modalY, modalW, modalH)
+        write(batch, ctx, "GAME PAUSED", modalX + 46.0, modalY + 14.0)
+
+        val btnW = 96.0
+        val btnH = 18.0
+        val btnX = modalX + (modalW - btnW) / 2.0
+        val btnY = modalY + 34.0
+        drawNineSlice(batch, ctx, "pink_frame", btnX, btnY, btnW, btnH)
+        write(batch, ctx, "RESUME (TAP)", btnX + 11.0, btnY + 6.0)
     }
 
     private fun drawShop(
