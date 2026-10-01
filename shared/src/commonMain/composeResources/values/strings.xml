@@ -1,0 +1,88 @@
+<resources>
+    <string name="app_name">Norman The Necromancer</string>
+
+    <!-- Intro -->
+    <string name="intro_1">Norman wasn\'t a particularly popular necromancer...</string>
+    <string name="intro_2">The other villagers hunted him.</string>
+    <string name="intro_3">Sometimes they even finished the job.</string>
+    <string name="intro_4">But like any self-respecting necromancer...</string>
+    <string name="intro_5">Norman just brought himself back.</string>
+    <string name="intro_tap_to_begin">(Tap anywhere to begin)</string>
+    <string name="intro_skip">(Tap to continue)</string>
+
+    <!-- Outro -->
+    <string name="outro_1">It was over.</string>
+    <string name="outro_2">Norman was able to study peacefully.</string>
+    <string name="outro_3">But he knew that eventually, they\'d be back.</string>
+    <string name="outro_4">THE END</string>
+    <string name="outro_credits">Original Game by Dan Prince\nCreated for JS13k Games 2022\ndanthedev.com\n\nThanks for playing!</string>
+    <string name="outro_tap_continue">(Tap to continue)</string>
+    <string name="outro_tap_play_again">(Tap anywhere to play again)</string>
+
+    <!-- HUD &amp; Overlays -->
+    <string name="hud_pause">PAUSE</string>
+    <string name="hud_play">PLAY</string>
+    <string name="hud_resurrect_ready">RESURRECT (TAP/SPACE)</string>
+    <string name="hud_resurrect_cooldown">Resurrect (%ds)</string>
+    <string name="pause_title">GAME PAUSED</string>
+    <string name="pause_resume">RESUME (TAP)</string>
+
+    <!-- Shop -->
+    <string name="shop_title">=== RITUALS SHOP ===</string>
+    <string name="shop_desc">Desc:</string>
+    <string name="shop_free">[FREE]</string>
+    <string name="shop_tap_buy">[ TAP HERE TO BUY ]</string>
+    <string name="shop_need_souls">[ NEED MORE SOULS ]</string>
+    <string name="shop_next_wave">[ TAP HERE TO BEGIN NEXT LEVEL ]</string>
+    <string name="shop_item_heal_name">Heal</string>
+    <string name="shop_item_heal_desc">Heal 1 HP</string>
+    <string name="shop_item_renew_name">Renew</string>
+    <string name="shop_item_renew_desc">+1 Max HP</string>
+    <string name="shop_item_recharge_name">Recharge</string>
+    <string name="shop_item_recharge_desc">+1 Max Cast</string>
+    <string name="shop_item_continue_name">Continue</string>
+    <string name="shop_item_continue_desc">Begin next level</string>
+
+    <!-- Rituals -->
+    <string name="ritual_streak_name">Streak</string>
+    <string name="ritual_bouncing_name">Bouncing</string>
+    <string name="ritual_bouncing_desc">Spells bounce</string>
+    <string name="ritual_doubleshot_name">Doubleshot</string>
+    <string name="ritual_doubleshot_desc">Cast 2 spells</string>
+    <string name="ritual_hunter_name">Hunter</string>
+    <string name="ritual_hunter_desc">Spells seek targets</string>
+    <string name="ritual_weightless_name">Weightless</string>
+    <string name="ritual_weightless_desc">Spells are not affected by gravity</string>
+    <string name="ritual_knockback_name">Knockback</string>
+    <string name="ritual_knockback_desc">Spells knock backwards</string>
+    <string name="ritual_ceiling_name">Ceiling</string>
+    <string name="ritual_ceiling_desc">Adds a ceiling</string>
+    <string name="ritual_rain_name">Rain</string>
+    <string name="ritual_rain_desc">Spells split when they drop</string>
+    <string name="ritual_drunkard_name">Drunkard</string>
+    <string name="ritual_drunkard_desc">2x damage, wobbly aim</string>
+    <string name="ritual_seer_name">Seer</string>
+    <string name="ritual_seer_desc">Spells pass through the dead</string>
+    <string name="ritual_tearstone_name">Tearstone</string>
+    <string name="ritual_tearstone_desc">3x damage when &lt; half HP</string>
+    <string name="ritual_impatience_name">Impatience</string>
+    <string name="ritual_impatience_desc">Resurrection recharges 2x faster</string>
+    <string name="ritual_bleed_name">Bleed</string>
+    <string name="ritual_bleed_desc">Inflicts bleed on hits</string>
+    <string name="ritual_allegiance_name">Allegiance</string>
+    <string name="ritual_allegiance_desc">Summon your honour guard after resurrections</string>
+    <string name="ritual_salvage_name">Salvage</string>
+    <string name="ritual_salvage_desc">Corpses become souls at end of level</string>
+    <string name="ritual_studious_name">Studious</string>
+    <string name="ritual_studious_desc">Rituals are 50% cheaper</string>
+    <string name="ritual_electrodynamics_name">Electrodynamics</string>
+    <string name="ritual_electrodynamics_desc">Lightning strikes after hits</string>
+    <string name="ritual_chilly_name">Chilly</string>
+    <string name="ritual_chilly_desc">10% chance to freeze enemies</string>
+    <string name="ritual_giants_name">Giants</string>
+    <string name="ritual_giants_desc">20% chance to resurrect giant skeletons</string>
+    <string name="ritual_avarice_name">Avarice</string>
+    <string name="ritual_avarice_desc">+1 soul for each corpse you resurrect</string>
+    <string name="ritual_hardened_name">Hardened</string>
+    <string name="ritual_hardened_desc">Undead have +1 HP</string>
+</resources>

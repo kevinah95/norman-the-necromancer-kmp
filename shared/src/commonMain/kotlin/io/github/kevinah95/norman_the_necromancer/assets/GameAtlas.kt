@@ -84,6 +84,19 @@ object GameAtlas {
             }
             glyphSlices[char] = fontBmp.sliceWithSize(dx, dy, GLYPH_WIDTH, GLYPH_HEIGHT, name = "glyph_$char")
         }
+
+        // Map accented Spanish characters and inverted punctuation for safe pixel-perfect font rendering
+        val accentMap = mapOf(
+            'á' to 'a', 'é' to 'e', 'í' to 'i', 'ó' to 'o', 'ú' to 'u',
+            'Á' to 'A', 'É' to 'E', 'Í' to 'I', 'Ó' to 'O', 'Ú' to 'U',
+            'ñ' to 'n', 'Ñ' to 'N',
+            'ü' to 'u', 'Ü' to 'U',
+            '¿' to '?', '¡' to '!'
+        )
+        for ((accented, base) in accentMap) {
+            glyphSlices[base]?.let { glyphSlices[accented] = it }
+            glyphWidths[accented] = glyphWidths[base] ?: GLYPH_WIDTH
+        }
     }
 
     fun getSprite(name: String): BmpSlice? = sprites[name]

@@ -1,0 +1,88 @@
+<resources>
+    <string name="app_name">Norman El Nigromante</string>
+
+    <!-- Intro -->
+    <string name="intro_1">Norman no era un nigromante especialmente popular...</string>
+    <string name="intro_2">Los otros aldeanos lo cazaban.</string>
+    <string name="intro_3">A veces incluso terminaban el trabajo.</string>
+    <string name="intro_4">Pero como buen nigromante con orgullo...</string>
+    <string name="intro_5">Norman simplemente volvio a levantarse.</string>
+    <string name="intro_tap_to_begin">(Toca en cualquier lugar para comenzar)</string>
+    <string name="intro_skip">(Toca para continuar)</string>
+
+    <!-- Outro -->
+    <string name="outro_1">Habia terminado.</string>
+    <string name="outro_2">Norman pudo estudiar en paz.</string>
+    <string name="outro_3">Pero sabia que con el tiempo volverian.</string>
+    <string name="outro_4">FIN</string>
+    <string name="outro_credits">Juego original por Dan Prince\nCreado para JS13k Games 2022\ndanthedev.com\n\nGracias por jugar!</string>
+    <string name="outro_tap_continue">(Toca para continuar)</string>
+    <string name="outro_tap_play_again">(Toca en cualquier lugar para jugar de nuevo)</string>
+
+    <!-- HUD &amp; Overlays -->
+    <string name="hud_pause">PAUSA</string>
+    <string name="hud_play">JUGAR</string>
+    <string name="hud_resurrect_ready">RESUCITAR (TOCA/ESPACIO)</string>
+    <string name="hud_resurrect_cooldown">Resucitar (%ds)</string>
+    <string name="pause_title">JUEGO PAUSADO</string>
+    <string name="pause_resume">REANUDAR (TOCA)</string>
+
+    <!-- Shop -->
+    <string name="shop_title">=== TIENDA DE RITUALES ===</string>
+    <string name="shop_desc">Desc:</string>
+    <string name="shop_free">[GRATIS]</string>
+    <string name="shop_tap_buy">[ TOCA AQUI PARA COMPRAR ]</string>
+    <string name="shop_need_souls">[ NECESITAS MAS ALMAS ]</string>
+    <string name="shop_next_wave">[ TOCA AQUI PARA EL SIGUIENTE NIVEL ]</string>
+    <string name="shop_item_heal_name">Curar</string>
+    <string name="shop_item_heal_desc">Recupera 1 de Vida</string>
+    <string name="shop_item_renew_name">Vitalidad</string>
+    <string name="shop_item_renew_desc">+1 Vida Maxima</string>
+    <string name="shop_item_recharge_name">Carga Magica</string>
+    <string name="shop_item_recharge_desc">+1 Hechizo Maximo</string>
+    <string name="shop_item_continue_name">Continuar</string>
+    <string name="shop_item_continue_desc">Comenzar siguiente nivel</string>
+
+    <!-- Rituals -->
+    <string name="ritual_streak_name">Racha</string>
+    <string name="ritual_bouncing_name">Rebote</string>
+    <string name="ritual_bouncing_desc">Los hechizos rebotan</string>
+    <string name="ritual_doubleshot_name">Doble Disparo</string>
+    <string name="ritual_doubleshot_desc">Lanza 2 hechizos</string>
+    <string name="ritual_hunter_name">Cazador</string>
+    <string name="ritual_hunter_desc">Los hechizos buscan objetivos</string>
+    <string name="ritual_weightless_name">Ingravidez</string>
+    <string name="ritual_weightless_desc">Los hechizos no tienen gravedad</string>
+    <string name="ritual_knockback_name">Empuje</string>
+    <string name="ritual_knockback_desc">Los hechizos empujan hacia atras</string>
+    <string name="ritual_ceiling_name">Techo</string>
+    <string name="ritual_ceiling_desc">Anade un techo</string>
+    <string name="ritual_rain_name">Lluvia</string>
+    <string name="ritual_rain_desc">Los hechizos se dividen al caer</string>
+    <string name="ritual_drunkard_name">Borracho</string>
+    <string name="ritual_drunkard_desc">2x dano, punteria tambaleante</string>
+    <string name="ritual_seer_name">Vidente</string>
+    <string name="ritual_seer_desc">Los hechizos atraviesan a los muertos</string>
+    <string name="ritual_tearstone_name">Piedra de Lagrimas</string>
+    <string name="ritual_tearstone_desc">3x dano con menos de media vida</string>
+    <string name="ritual_impatience_name">Impaciencia</string>
+    <string name="ritual_impatience_desc">La resurreccion carga 2x mas rapido</string>
+    <string name="ritual_bleed_name">Sangrado</string>
+    <string name="ritual_bleed_desc">Inflige sangrado al impactar</string>
+    <string name="ritual_allegiance_name">Lealtad</string>
+    <string name="ritual_allegiance_desc">Invoca a tu guardia de honor al resucitar</string>
+    <string name="ritual_salvage_name">Rescate</string>
+    <string name="ritual_salvage_desc">Los cadaveres dan almas al final del nivel</string>
+    <string name="ritual_studious_name">Estudioso</string>
+    <string name="ritual_studious_desc">Los rituales cuestan un 50% menos</string>
+    <string name="ritual_electrodynamics_name">Electrodinamica</string>
+    <string name="ritual_electrodynamics_desc">Rayos caen tras los impactos</string>
+    <string name="ritual_chilly_name">Gelido</string>
+    <string name="ritual_chilly_desc">10% de probabilidad de congelar enemigos</string>
+    <string name="ritual_giants_name">Gigantes</string>
+    <string name="ritual_giants_desc">20% de probabilidad de resucitar esqueletos gigantes</string>
+    <string name="ritual_avarice_name">Avaricia</string>
+    <string name="ritual_avarice_desc">+1 alma por cada cadaver que resucites</string>
+    <string name="ritual_hardened_name">Endurecido</string>
+    <string name="ritual_hardened_desc">Los no-muertos tienen +1 de vida</string>
+</resources>

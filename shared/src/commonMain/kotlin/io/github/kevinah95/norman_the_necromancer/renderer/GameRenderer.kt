@@ -348,9 +348,9 @@ class GameRenderer {
         val pauseBtnW = 46.0
         val pauseBtnH = 18.0
         drawNineSlice(batch, ctx, "pink_frame", pauseBtnX, pauseBtnY, pauseBtnW, pauseBtnH)
-        val pauseLabel = if (isPaused) "PLAY" else "PAUSE"
-        val labelOffset = if (isPaused) 12.0 else 8.0
-        write(batch, ctx, pauseLabel, pauseBtnX + labelOffset, pauseBtnY + 6.0)
+        val pauseLabel = if (isPaused) io.github.kevinah95.norman_the_necromancer.i18n.GameStrings.hudPlay else io.github.kevinah95.norman_the_necromancer.i18n.GameStrings.hudPause
+        val labelW = getTextWidth(pauseLabel)
+        write(batch, ctx, pauseLabel, pauseBtnX + (pauseBtnW - labelW) / 2.0, pauseBtnY + 6.0)
 
         // Resurrect Button (Mobile touch-friendly + Desktop: elevated safely above iOS Home Indicator)
         if (game.state == GameState.PLAYING) {
@@ -365,7 +365,7 @@ class GameRenderer {
             drawSprite(batch, ctx, "skull", bx + 2.0, by + 4.0)
 
             val ready = progress >= 1.0
-            val label = if (ready) "RESURRECT (TAP/SPACE)" else "Resurrect (${((1.0 - progress) * game.ability.cooldown / 1000).toInt()}s)"
+            val label = if (ready) io.github.kevinah95.norman_the_necromancer.i18n.GameStrings.hudResurrectReady else io.github.kevinah95.norman_the_necromancer.i18n.GameStrings.hudResurrectCooldown(((1.0 - progress) * game.ability.cooldown / 1000).toInt())
             write(batch, ctx, label, bx + 12.0, by + 5.0)
         }
     }
@@ -379,15 +379,19 @@ class GameRenderer {
         val modalX = (400.0 - modalW) / 2.0
         val modalY = (200.0 - modalH) / 2.0
 
+        val pauseTitle = io.github.kevinah95.norman_the_necromancer.i18n.GameStrings.pauseTitle
+        val titleW = getTextWidth(pauseTitle)
         drawNineSlice(batch, ctx, "pink_frame", modalX, modalY, modalW, modalH)
-        write(batch, ctx, "GAME PAUSED", modalX + 46.0, modalY + 14.0)
+        write(batch, ctx, pauseTitle, modalX + (modalW - titleW) / 2.0, modalY + 14.0)
 
         val btnW = 96.0
         val btnH = 18.0
         val btnX = modalX + (modalW - btnW) / 2.0
         val btnY = modalY + 34.0
         drawNineSlice(batch, ctx, "pink_frame", btnX, btnY, btnW, btnH)
-        write(batch, ctx, "RESUME (TAP)", btnX + 11.0, btnY + 6.0)
+        val resumeLabel = io.github.kevinah95.norman_the_necromancer.i18n.GameStrings.pauseResume
+        val resumeW = getTextWidth(resumeLabel)
+        write(batch, ctx, resumeLabel, btnX + (btnW - resumeW) / 2.0, btnY + 6.0)
     }
 
     private fun drawShop(
@@ -395,7 +399,9 @@ class GameRenderer {
         ctx: RenderContext,
         game: Game
     ) {
-        write(batch, ctx, "=== RITUALS SHOP ===", 135.0, 20.0)
+        val shopTitle = io.github.kevinah95.norman_the_necromancer.i18n.GameStrings.shopTitle
+        val titleW = getTextWidth(shopTitle)
+        write(batch, ctx, shopTitle, (400.0 - titleW) / 2.0, 20.0)
 
         val selected = ShopManager.items.getOrNull(ShopManager.selectedIndex)
 
@@ -403,21 +409,23 @@ class GameRenderer {
         for ((index, item) in ShopManager.items.withIndex()) {
             val isSel = index == ShopManager.selectedIndex
             val prefix = if (isSel) "> " else "  "
-            val costStr = if (item.cost > 0) "$${item.cost}" else "[FREE]"
-            val text = "$prefix${item.name} $costStr"
+            val costStr = if (item.cost > 0) "$${item.cost}" else io.github.kevinah95.norman_the_necromancer.i18n.GameStrings.shopFree
+            val itemName = io.github.kevinah95.norman_the_necromancer.i18n.GameStrings.getRitualName(item.name)
+            val text = "$prefix$itemName $costStr"
             write(batch, ctx, text, 100.0, itemY)
             itemY += 12.0
         }
 
         selected?.let {
-            write(batch, ctx, "Desc: ${it.description}", 100.0, itemY + 6.0)
-            if (it.cost > 0) {
-                val canAfford = it.cost <= game.souls
-                val actionText = if (canAfford) "[ TAP HERE TO BUY ]" else "[ NEED MORE SOULS ]"
-                write(batch, ctx, actionText, 130.0, itemY + 20.0)
+            val desc = io.github.kevinah95.norman_the_necromancer.i18n.GameStrings.getRitualDesc(it.name, it.description)
+            write(batch, ctx, "${io.github.kevinah95.norman_the_necromancer.i18n.GameStrings.shopDesc} $desc", 100.0, itemY + 6.0)
+            val actionText = if (it.cost > 0) {
+                if (it.cost <= game.souls) io.github.kevinah95.norman_the_necromancer.i18n.GameStrings.shopTapBuy else io.github.kevinah95.norman_the_necromancer.i18n.GameStrings.shopNeedSouls
             } else {
-                write(batch, ctx, "[ TAP HERE TO BEGIN NEXT WAVE ]", 110.0, itemY + 20.0)
+                io.github.kevinah95.norman_the_necromancer.i18n.GameStrings.shopNextWave
             }
+            val actionW = getTextWidth(actionText)
+            write(batch, ctx, actionText, (400.0 - actionW) / 2.0, itemY + 20.0)
         }
     }
 
@@ -434,15 +442,30 @@ class GameRenderer {
             writeCentered(batch, ctx, currentText, 66.0, lineSpacing = 11.0)
 
             // Draw tap hint below text
-            val hintText = if (game.dialogue.size > 1) "(Tap to continue)" else "(Tap anywhere to play again)"
+            val hintText = if (game.dialogue.size > 1) io.github.kevinah95.norman_the_necromancer.i18n.GameStrings.outroTapContinue else io.github.kevinah95.norman_the_necromancer.i18n.GameStrings.outroTapPlayAgain
             val hintW = getTextWidth(hintText)
             write(batch, ctx, hintText, (400.0 - hintW) / 2.0, 116.0)
         } else {
-            val textX = 65.0
-            val textY = 70.0
-            write(batch, ctx, currentText, textX, textY)
+            val lineW = getTextWidth(currentText.trim())
+            write(batch, ctx, currentText.trim(), (400.0 - lineW) / 2.0, 70.0)
             if (game.state == GameState.INTRO) {
-                write(batch, ctx, "(Tap screen to skip)", 140.0, 95.0)
+                val contText = if (game.dialogue.size > 1) {
+                    io.github.kevinah95.norman_the_necromancer.i18n.GameStrings.introTapContinue
+                } else {
+                    io.github.kevinah95.norman_the_necromancer.i18n.GameStrings.introTapToBegin
+                }
+                val contW = getTextWidth(contText)
+                write(batch, ctx, contText, (400.0 - contW) / 2.0, 95.0)
+
+                // Language toggle button at the top-right of intro screen: [EN]  ES or EN  [ES]
+                val langBtnX = 332.0
+                val langBtnY = 8.0
+                val langBtnW = 60.0
+                val langBtnH = 18.0
+                drawNineSlice(batch, ctx, "pink_frame", langBtnX, langBtnY, langBtnW, langBtnH)
+                val langLabel = io.github.kevinah95.norman_the_necromancer.i18n.GameStrings.langButtonText
+                val langW = getTextWidth(langLabel)
+                write(batch, ctx, langLabel, langBtnX + (langBtnW - langW) / 2.0, langBtnY + 6.0)
             }
         }
     }

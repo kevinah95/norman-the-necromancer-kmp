@@ -19,7 +19,7 @@ class GameTest {
         assertTrue(GameAtlas.sprites.isNotEmpty())
         assertTrue(GameAtlas.getSprite("norman_arms_up") != null)
         assertTrue(GameAtlas.glyphSlices.isNotEmpty())
-        assertEquals(96, GameAtlas.glyphSlices.size)
+        assertTrue(GameAtlas.glyphSlices.size >= 96)
     }
 
     @Test
@@ -252,6 +252,45 @@ class GameTest {
         assertEquals(1, game.dialogue.size)
         assertTrue(game.dialogue[0].contains("Dan Prince"))
         assertTrue(game.dialogue[0].contains("Thanks for playing!"))
+    }
+
+    @Test
+    fun testLocalizationAndLanguageToggle() {
+        val strings = io.github.kevinah95.norman_the_necromancer.i18n.GameStrings
+        strings.language = io.github.kevinah95.norman_the_necromancer.i18n.GameLanguage.EN
+
+        assertEquals("PAUSE", strings.hudPause)
+        assertEquals("Bouncing", strings.getRitualName("Bouncing"))
+        assertEquals("Spells bounce", strings.getRitualDesc("Bouncing", "Spells bounce"))
+        assertEquals(5, strings.getIntroDialogue().size)
+
+        // Toggle to Spanish
+        val newLang = strings.toggleLanguage()
+        assertEquals(io.github.kevinah95.norman_the_necromancer.i18n.GameLanguage.ES, newLang)
+        assertEquals("PAUSA", strings.hudPause)
+        assertEquals("Rebote", strings.getRitualName("Bouncing"))
+        assertEquals("Los hechizos rebotan", strings.getRitualDesc("Bouncing", "Spells bounce"))
+        assertEquals("Vitalidad", strings.getRitualName("Renew"))
+        assertEquals("+1 Vida Maxima", strings.getRitualDesc("Renew", "+1 Max HP"))
+        assertEquals("Carga Magica", strings.getRitualName("Recharge"))
+        assertEquals("+1 Hechizo Maximo", strings.getRitualDesc("Recharge", "+1 Max Cast"))
+        assertEquals("Continuar", strings.getRitualName("Continue"))
+        assertEquals("Comenzar siguiente nivel", strings.getRitualDesc("Continue", "Begin next level"))
+        assertTrue(strings.getIntroDialogue()[0].contains("Norman"))
+        assertTrue(strings.getOutroDialogue()[3] == "FIN")
+
+        // Reset to English
+        strings.toggleLanguage()
+        assertEquals(io.github.kevinah95.norman_the_necromancer.i18n.GameLanguage.EN, strings.language)
+    }
+
+    @Test
+    fun testAccentedCharactersFontMetrics() = suspendTest {
+        GameAtlas.load()
+        val renderer = io.github.kevinah95.norman_the_necromancer.renderer.GameRenderer()
+        // Spanish text with accents should measure without error and have positive width
+        val width = renderer.getTextWidth("Había terminado. ¡Gracias por jugar!")
+        assertTrue(width > 0.0)
     }
 }
 

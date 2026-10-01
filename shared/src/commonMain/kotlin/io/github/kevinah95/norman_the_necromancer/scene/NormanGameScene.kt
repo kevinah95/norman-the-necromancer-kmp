@@ -10,6 +10,7 @@ import io.github.kevinah95.norman_the_necromancer.levels.LevelManager
 import io.github.kevinah95.norman_the_necromancer.renderer.GameRenderer
 import io.github.kevinah95.norman_the_necromancer.rituals.StreakRitual
 import io.github.kevinah95.norman_the_necromancer.shop.ShopManager
+import io.github.kevinah95.norman_the_necromancer.i18n.GameStrings
 import korlibs.event.Key
 import korlibs.korge.input.keys
 import korlibs.korge.input.mouse
@@ -33,23 +34,6 @@ class NormanGameScene : Scene() {
     private var normanIsBouncing = false
     private var introCooldown = 0.0
     private var outroCooldown = 0.0
-
-    private val introDialogue = listOf(
-        "Norman wasn't a particularly popular necromancer...",
-        "         The other villagers hunted him.",
-        "     Sometimes they even finished the job.",
-        "  But like any self-respecting necromancer...",
-        "        Norman just brought himself back.",
-        "             (Tap anywhere to begin)"
-    )
-
-    private val outroDialogue = listOf(
-        "It was over.",
-        "Norman was able to study peacefully.",
-        "But he knew that eventually, they'd be back.",
-        "THE END",
-        "Original Game by Dan Prince\nCreated for JS13k Games 2022\ndanthedev.com\n\nThanks for playing!"
-    )
 
     override suspend fun SContainer.sceneMain() {
         GameAtlas.load()
@@ -82,7 +66,7 @@ class NormanGameScene : Scene() {
         game = Game().apply {
             this.player = player
             spawn(player)
-            dialogue.addAll(introDialogue)
+            dialogue.addAll(GameStrings.getIntroDialogue())
             addRitual(StreakRitual)
         }
         ShopManager.init(game)
@@ -150,7 +134,7 @@ class NormanGameScene : Scene() {
     private fun onWin() {
         game.state = GameState.WIN
         game.dialogue.clear()
-        game.dialogue.addAll(outroDialogue)
+        game.dialogue.addAll(GameStrings.getOutroDialogue())
         outroCooldown = 1500.0
         dialogueTimer = 0.0
         touchAimActive = false
@@ -167,10 +151,14 @@ class NormanGameScene : Scene() {
 
     private fun updateDialogue(dtMs: Double) {
         dialogueTimer += dtMs
-        val limit = if (game.state == GameState.WIN) 8000.0 else 4000.0
+        val limit = if (game.state == GameState.WIN) 8000.0 else 5500.0
         if (dialogueTimer > limit) {
             dialogueTimer = 0.0
             if (game.state == GameState.WIN) {
+                if (game.dialogue.size > 1) {
+                    game.dialogue.removeAt(0)
+                }
+            } else if (game.state == GameState.INTRO) {
                 if (game.dialogue.size > 1) {
                     game.dialogue.removeAt(0)
                 }
@@ -178,10 +166,51 @@ class NormanGameScene : Scene() {
                 if (game.dialogue.isNotEmpty()) {
                     game.dialogue.removeAt(0)
                 }
-                if (game.state == GameState.INTRO && game.dialogue.isEmpty()) {
-                    game.dialogue.add("                (Tap to begin)")
-                }
             }
+        }
+    }
+
+    private fun advanceIntroOrStart() {
+        if (introCooldown > 0.0) return
+        if (game.dialogue.size > 1) {
+            game.dialogue.removeAt(0)
+            dialogueTimer = 0.0
+            introCooldown = 250.0
+        } else {
+            game.state = GameState.PLAYING
+            game.player.spriteName = "norman_arms_down"
+            game.dialogue.clear()
+            GameAudio.play()
+            GameAudio.useLevelSynths(game.level)
+        }
+    }
+
+    private fun advanceOutroOrRestart() {
+        if (outroCooldown > 0.0) return
+        if (game.dialogue.size > 1) {
+            game.dialogue.removeAt(0)
+            dialogueTimer = 0.0
+            outroCooldown = 250.0
+        } else {
+            onLose()
+        }
+    }
+
+    private fun toggleLanguage() {
+        val prevLang = GameStrings.language
+        GameStrings.toggleLanguage()
+        if (game.state == GameState.INTRO) {
+            val oldList = GameStrings.getIntroDialogueFor(prevLang)
+            val currentIdx = (oldList.size - game.dialogue.size).coerceIn(0, oldList.size - 1)
+            game.dialogue.clear()
+            game.dialogue.addAll(GameStrings.getIntroDialogue().drop(currentIdx))
+            dialogueTimer = 0.0
+        } else if (game.state == GameState.WIN) {
+            val oldList = GameStrings.getOutroDialogueFor(prevLang)
+            val currentIdx = (oldList.size - game.dialogue.size).coerceIn(0, oldList.size - 1)
+            game.dialogue.clear()
+            game.dialogue.addAll(GameStrings.getOutroDialogue().drop(currentIdx))
+            dialogueTimer = 0.0
         }
     }
 
@@ -202,24 +231,15 @@ class NormanGameScene : Scene() {
 
             when (game.state) {
                 GameState.INTRO -> {
-                    if (introCooldown <= 0.0) {
-                        game.state = GameState.PLAYING
-                        game.player.spriteName = "norman_arms_down"
-                        game.dialogue.clear()
-                        GameAudio.play()
-                        GameAudio.useLevelSynths(game.level)
+                    // Check language toggle button tap at top right (x = 328..395, y = 8..26)
+                    if (px in 320.0..398.0 && py in 5.0..32.0) {
+                        toggleLanguage()
+                        return@onDown
                     }
+                    advanceIntroOrStart()
                 }
                 GameState.WIN -> {
-                    if (outroCooldown <= 0.0) {
-                        if (game.dialogue.size > 1) {
-                            game.dialogue.removeAt(0)
-                            dialogueTimer = 0.0
-                            outroCooldown = 250.0
-                        } else {
-                            onLose()
-                        }
-                    }
+                    advanceOutroOrRestart()
                 }
                 GameState.LOSE -> {
                     onLose()
@@ -311,22 +331,10 @@ class NormanGameScene : Scene() {
                 }
                 if (game.state == GameState.PLAYING && game.resurrect()) {
                     GameAudio.playResurrect()
-                } else if (game.state == GameState.INTRO && introCooldown <= 0.0) {
-                    game.state = GameState.PLAYING
-                    game.player.spriteName = "norman_arms_down"
-                    game.dialogue.clear()
-                    GameAudio.play()
-                    GameAudio.useLevelSynths(game.level)
+                } else if (game.state == GameState.INTRO) {
+                    advanceIntroOrStart()
                 } else if (game.state == GameState.WIN) {
-                    if (outroCooldown <= 0.0) {
-                        if (game.dialogue.size > 1) {
-                            game.dialogue.removeAt(0)
-                            dialogueTimer = 0.0
-                            outroCooldown = 250.0
-                        } else {
-                            onLose()
-                        }
-                    }
+                    advanceOutroOrRestart()
                 } else if (game.state == GameState.LOSE) {
                     onLose()
                 }
@@ -343,6 +351,10 @@ class NormanGameScene : Scene() {
                 // Debug shortcut: Press 'W' to trigger victory screen immediately
                 onWin()
             }
+            down(Key.L) {
+                // Toggle language: English / Español
+                toggleLanguage()
+            }
             down(Key.UP) {
                 if (game.state == GameState.SHOPPING) ShopManager.selectIndex(-1)
             }
@@ -352,22 +364,10 @@ class NormanGameScene : Scene() {
             down(Key.ENTER) {
                 if (game.state == GameState.SHOPPING && ShopManager.buyCurrent()) {
                     GameAudio.playBuy()
-                } else if (game.state == GameState.INTRO && introCooldown <= 0.0) {
-                    game.state = GameState.PLAYING
-                    game.player.spriteName = "norman_arms_down"
-                    game.dialogue.clear()
-                    GameAudio.play()
-                    GameAudio.useLevelSynths(game.level)
+                } else if (game.state == GameState.INTRO) {
+                    advanceIntroOrStart()
                 } else if (game.state == GameState.WIN) {
-                    if (outroCooldown <= 0.0) {
-                        if (game.dialogue.size > 1) {
-                            game.dialogue.removeAt(0)
-                            dialogueTimer = 0.0
-                            outroCooldown = 250.0
-                        } else {
-                            onLose()
-                        }
-                    }
+                    advanceOutroOrRestart()
                 } else if (game.state == GameState.LOSE) {
                     onLose()
                 }
