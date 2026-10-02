@@ -4,6 +4,7 @@
   <a href="https://github.com/kevinah95/norman-the-necromancer-kmp/releases"><img alt="GitHub release (with filter)" src="https://img.shields.io/github/v/release/kevinah95/norman-the-necromancer-kmp?style=flat&label=Release&color=7F52FF"/></a>
   <a href="https://kotlinlang.org/"><img alt="Kotlin Version" src="https://img.shields.io/badge/Kotlin-2.4.20-%237F52FF.svg?logo=kotlin"/></a>
   <a href="https://github.com/JetBrains/compose-multiplatform"><img alt="Compose Multiplatform" src="https://img.shields.io/badge/Compose%20Multiplatform-v1.12.1-%237F52FF"/></a>
+  <a href="https://kevinah95.github.io/norman-the-necromancer-kmp/"><img alt="Play Online" src="https://img.shields.io/badge/Play%20Online-GitHub%20Pages-brightgreen?logo=googlechrome&logoColor=white"/></a>
   <img alt="Platforms" src="https://img.shields.io/badge/Platforms-Android%20%7C%20iOS%20%7C%20Desktop%20%7C%20Web-success"/>
 </p>
 
@@ -69,7 +70,7 @@ Play as Norman, battle waves of angry villagers, and raise your fallen foes into
 - 🤖 **Android**: Native app with touch-tailored controls and home indicator spacing.
 - 🍏 **iOS**: Native SwiftUI/Compose framework for iPhone and iPad.
 - 🖥️ **Desktop**: Native standalone executable for macOS, Windows, and Linux (JVM).
-- 🌐 **Web**: Instant browser gameplay compiled with Kotlin/WasmJS and JavaScript.
+- 🌐 **Web**: Instant browser gameplay compiled with Kotlin/WasmJS and JavaScript — [**Play Online on GitHub Pages**](https://kevinah95.github.io/norman-the-necromancer-kmp/) 🎮
 
 ---
 
