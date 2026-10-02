@@ -1,93 +1,11 @@
 version: '3'
 
-vars:
-  PACKAGE_NAME: "io.github.kevinah95.norman_the_necromancer"
-  ACTIVITY_NAME: ".MainActivity"
+includes:
+  app:
+    taskfile: ./app/Taskfile.yml
+    dir: ./app
 
 tasks:
   default:
-    desc: "Muestra la lista de tareas disponibles"
     cmds:
       - task --list
-
-  # --- Desktop ---
-  desktop:
-    desc: "Lanza el juego en Desktop (JVM)"
-    cmds:
-      - ./gradlew :desktopApp:run
-
-  build-desktop:
-    desc: "Compila el ensamble de Desktop"
-    cmds:
-      - ./gradlew :desktopApp:assemble
-
-  package-desktop:
-    desc: "Empaqueta la distribución nativa de Desktop para el OS actual (.dmg en macOS)"
-    cmds:
-      - ./gradlew :desktopApp:packageDistributionForCurrentOS
-
-  # --- Android ---
-  android:
-    desc: "Compila, instala y lanza el juego en el dispositivo Android conectado"
-    deps: [install-android]
-    cmds:
-      - adb shell am start -n {{.PACKAGE_NAME}}/{{.ACTIVITY_NAME}}
-
-  build-android:
-    desc: "Compila el APK Debug de Android"
-    cmds:
-      - ./gradlew :androidApp:assembleDebug
-
-  install-android:
-    desc: "Instala el APK Debug en el dispositivo o emulador conectado"
-    cmds:
-      - ./gradlew :androidApp:installDebug
-
-  # --- Web ---
-  web-js:
-    desc: "Ejecuta el servidor de desarrollo Web (JavaScript)"
-    cmds:
-      - ./gradlew :webApp:jsBrowserDevelopmentRun
-
-  build-web-js:
-    desc: "Compila el bundle de producción Web (JavaScript Webpack)"
-    cmds:
-      - ./gradlew :webApp:jsBrowserDistribution
-
-  web-wasm:
-    desc: "Ejecuta el servidor de desarrollo Web (WasmJS)"
-    cmds:
-      - ./gradlew :webApp:wasmJsBrowserDevelopmentRun
-
-  build-web-wasm:
-    desc: "Compila el bundle de producción Web (WasmJS Webpack)"
-    cmds:
-      - ./gradlew :webApp:wasmJsBrowserDistribution
-
-  # --- iOS ---
-  ios:
-    desc: "Compila el framework para el simulador de iOS (arm64)"
-    cmds:
-      - ./gradlew :shared:linkDebugFrameworkIosSimulatorArm64
-
-  build-ios:
-    desc: "Compila los frameworks de iOS para Simulador y Dispositivo (arm64)"
-    cmds:
-      - ./gradlew :shared:linkDebugFrameworkIosSimulatorArm64 :shared:linkReleaseFrameworkIosArm64
-
-  # --- Tests y Utilidades ---
-  test:
-    desc: "Ejecuta todas las pruebas unitarias en la JVM"
-    cmds:
-      - ./gradlew :shared:jvmTest
-
-  build:
-    desc: "Compila todos los módulos (Desktop, Android, Web JS y Wasm)"
-    cmds:
-      - ./gradlew :desktopApp:assemble :androidApp:assembleDebug
-      - ./gradlew :webApp:jsBrowserDevelopmentWebpack :webApp:wasmJsBrowserDevelopmentWebpack
-
-  clean:
-    desc: "Limpia artefactos de compilación de Gradle"
-    cmds:
-      - ./gradlew clean
