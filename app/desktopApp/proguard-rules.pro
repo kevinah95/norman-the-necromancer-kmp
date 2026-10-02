@@ -1,0 +1,4 @@
+-dontwarn **
+-keep class io.github.kevinah95.norman_the_necromancer.** { *; }
+-keep class korlibs.** { *; }
+-keep class com.sun.jna.** { *; }

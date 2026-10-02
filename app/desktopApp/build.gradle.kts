@@ -33,6 +33,10 @@ compose.desktop {
 
         jvmArgs.addAll(korGeJvmArgs)
 
+        buildTypes.release.proguard {
+            configurationFiles.from(project.file("proguard-rules.pro"))
+        }
+
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "io.github.kevinah95.norman_the_necromancer"
