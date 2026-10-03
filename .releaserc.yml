@@ -1,0 +1,18 @@
+branches:
+  - main
+
+plugins:
+  - "@semantic-release/commit-analyzer"
+  - "@semantic-release/release-notes-generator"
+  - - "@semantic-release/exec"
+    - prepareCmd: "node app/scripts/sync-version.mjs ${nextRelease.version}"
+  - - "@semantic-release/changelog"
+    - changelogFile: "app/CHANGELOG.md"
+  - - "@semantic-release/git"
+    - assets:
+        - "app/CHANGELOG.md"
+        - "app/gradle.properties"
+        - "app/iosApp/Configuration/Config.xcconfig"
+        - "app/shared/src/commonMain/kotlin/io/github/kevinah95/norman_the_necromancer/GameVersion.kt"
+      message: "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
+  - "@semantic-release/github"

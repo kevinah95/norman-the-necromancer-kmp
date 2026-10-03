@@ -1,0 +1,66 @@
+name: Desktop Build And Upload
+description: Build a desktop distribution artifact and upload it to a GitHub release.
+
+inputs:
+  release_tag:
+    description: Git tag for the release.
+    required: true
+  gradle_task:
+    description: Gradle task used to build the desktop artifact.
+    required: true
+  artifact_glob:
+    description: Glob used to resolve the built desktop artifact.
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Install Linux packaging tools (Ubuntu only)
+      if: runner.os == 'Linux'
+      shell: bash
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y fakeroot dpkg
+
+    - name: Set up JDK 21
+      uses: actions/setup-java@v4
+      with:
+        distribution: temurin
+        java-version: "21"
+
+    - name: Set up Gradle
+      uses: gradle/actions/setup-gradle@v4
+      with:
+        gradle-version: wrapper
+        build-root-directory: app
+
+    - name: Grant execute permission for gradlew (Unix)
+      if: runner.os != 'Windows'
+      shell: bash
+      run: chmod +x app/gradlew
+
+    - name: Build desktop artifact
+      shell: bash
+      working-directory: app
+      run: ./gradlew ${{ inputs.gradle_task }} --no-daemon --stacktrace
+
+    - name: Resolve desktop artifact path
+      id: artifact
+      shell: bash
+      run: |
+        shopt -s nullglob
+        files=(${{ inputs.artifact_glob }})
+
+        if [ "${#files[@]}" -ne 1 ]; then
+          echo "Expected exactly one desktop artifact for pattern: ${{ inputs.artifact_glob }}" >&2
+          printf '%s\n' "${files[@]}"
+          exit 1
+        fi
+
+        echo "path=${files[0]}" >> "$GITHUB_OUTPUT"
+
+    - name: Sign and upload desktop release artifact
+      uses: ./.github/actions/sign-blob-and-upload
+      with:
+        release_tag: ${{ inputs.release_tag }}
+        artifact_path: ${{ steps.artifact.outputs.path }}
