@@ -2,13 +2,8 @@ rootProject.name = "NormanTheNecromancer"
 
 pluginManagement {
     repositories {
-        google {
-            mavenContent {
-                includeGroupAndSubgroups("androidx")
-                includeGroupAndSubgroups("com.android")
-                includeGroupAndSubgroups("com.google")
-            }
-        }
+        maven("https://packages.jetbrains.team/maven/p/kt/dev")
+        google()
         mavenCentral()
         gradlePluginPortal()
     }
@@ -16,13 +11,8 @@ pluginManagement {
 
 dependencyResolutionManagement {
     repositories {
-        google {
-            mavenContent {
-                includeGroupAndSubgroups("androidx")
-                includeGroupAndSubgroups("com.android")
-                includeGroupAndSubgroups("com.google")
-            }
-        }
+        maven("https://packages.jetbrains.team/maven/p/kt/dev")
+        google()
         mavenCentral()
     }
 }
