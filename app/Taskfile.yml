@@ -91,3 +91,8 @@ tasks:
     desc: "Limpia artefactos de compilación de Gradle"
     cmds:
       - ./gradlew clean
+
+  sync-version:
+    desc: "Sincroniza la versión del proyecto (ej: task sync-version -- 1.0.0)"
+    cmds:
+      - node ./scripts/sync-version.mjs {{.CLI_ARGS}}

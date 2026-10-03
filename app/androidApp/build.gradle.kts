@@ -27,8 +27,8 @@ android {
         applicationId = "io.github.kevinah95.norman_the_necromancer"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = providers.gradleProperty("app.versionCode").map { it.toInt() }.orElse(1).get()
+        versionName = providers.gradleProperty("app.versionName").orElse("1.0.0").get()
     }
     packaging {
         resources {

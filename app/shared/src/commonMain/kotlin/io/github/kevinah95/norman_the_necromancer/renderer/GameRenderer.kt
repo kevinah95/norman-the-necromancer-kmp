@@ -1,11 +1,14 @@
 package io.github.kevinah95.norman_the_necromancer.renderer
 
+import io.github.kevinah95.norman_the_necromancer.GameVersion
 import io.github.kevinah95.norman_the_necromancer.assets.GameAtlas
 import io.github.kevinah95.norman_the_necromancer.behaviours.Frozen
 import io.github.kevinah95.norman_the_necromancer.core.*
 import io.github.kevinah95.norman_the_necromancer.fx.Fx
 import io.github.kevinah95.norman_the_necromancer.shop.ShopManager
 import korlibs.image.bitmap.sliceWithSize
+import korlibs.image.color.Colors
+import korlibs.image.color.RGBA
 import korlibs.korge.render.BatchBuilder2D
 import korlibs.korge.render.RenderContext
 import kotlin.math.roundToInt
@@ -44,6 +47,19 @@ class GameRenderer {
         if (isPaused) {
             drawPauseOverlay(batch, ctx)
         }
+
+        drawVersion(batch, ctx)
+    }
+
+    private fun drawVersion(
+        batch: BatchBuilder2D,
+        ctx: RenderContext
+    ) {
+        val versionText = "v${GameVersion.VERSION_NAME}"
+        val textW = getTextWidth(versionText)
+        val x = 400.0 - textW - 4.0
+        val y = 200.0 - GameAtlas.GLYPH_HEIGHT - 3.0
+        write(batch, ctx, versionText, x, y, colorMul = Colors.WHITE.withAd(0.30))
     }
 
     fun drawSprite(
@@ -144,7 +160,8 @@ class GameRenderer {
         ctx: RenderContext,
         text: String,
         startX: Double,
-        startY: Double
+        startY: Double,
+        colorMul: RGBA = Colors.WHITE
     ) {
         var cursorX = startX
         var cursorY = startY
@@ -157,7 +174,15 @@ class GameRenderer {
                 val slice = GameAtlas.glyphSlices[char]
                 if (slice != null) {
                     val tex = ctx.getTex(slice)
-                    batch.drawQuad(tex, cursorX.toFloat(), cursorY.toFloat(), GameAtlas.GLYPH_WIDTH.toFloat(), GameAtlas.GLYPH_HEIGHT.toFloat(), filtering = false)
+                    batch.drawQuad(
+                        tex,
+                        cursorX.toFloat(),
+                        cursorY.toFloat(),
+                        GameAtlas.GLYPH_WIDTH.toFloat(),
+                        GameAtlas.GLYPH_HEIGHT.toFloat(),
+                        filtering = false,
+                        colorMul = colorMul
+                    )
                 }
                 cursorX += GameAtlas.getGlyphWidth(char)
             }

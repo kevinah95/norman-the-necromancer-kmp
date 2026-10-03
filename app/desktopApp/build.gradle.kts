@@ -6,6 +6,18 @@ plugins {
     alias(libs.plugins.composeCompiler)
 }
 
+val appVersionName = providers.gradleProperty("app.versionName").orElse("1.0.0").get()
+val appVersionCode = providers.gradleProperty("app.versionCode").orElse("10000").get()
+
+val appDisplayName = "Norman The Necromancer"
+val appBundleId = "io.github.kevinah95.norman_the_necromancer"
+val appDescription = "A 2D retro pixel-art roguelike action game where defeat is just the beginning."
+val appVendor = "Kevin A. Hernandez Rostran"
+
+kotlin {
+    jvmToolchain(21)
+}
+
 dependencies {
     implementation(project(":shared"))
 
@@ -34,13 +46,42 @@ compose.desktop {
         jvmArgs.addAll(korGeJvmArgs)
 
         buildTypes.release.proguard {
+            optimize.set(false)
             configurationFiles.from(project.file("proguard-rules.pro"))
         }
 
         nativeDistributions {
+            modules("java.management", "jdk.unsupported")
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "io.github.kevinah95.norman_the_necromancer"
-            packageVersion = "1.0.0"
+            packageName = appDisplayName
+            packageVersion = appVersionName
+            description = appDescription
+            vendor = appVendor
+            copyright = "Copyright 2026 $appVendor"
+
+            macOS {
+                packageName = appDisplayName
+                dockName = appDisplayName
+                bundleID = appBundleId
+                packageVersion = appVersionName
+                dmgPackageVersion = appVersionName
+                packageBuildVersion = appVersionCode
+                appCategory = "public.app-category.games"
+            }
+
+            windows {
+                packageVersion = appVersionName
+                msiPackageVersion = appVersionName
+                menuGroup = appDisplayName
+                dirChooser = true
+                perUserInstall = true
+            }
+
+            linux {
+                packageName = "norman-the-necromancer"
+                menuGroup = appDisplayName
+                appCategory = "Game"
+            }
         }
     }
 }
