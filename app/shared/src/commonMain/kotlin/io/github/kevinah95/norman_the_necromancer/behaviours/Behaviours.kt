@@ -64,17 +64,7 @@ class Bleeding(gameObject: GameObject) : Behaviour(gameObject) {
     init { turns = 3 }
     var amount: Int = 1
 
-    private val emitter = Fx.cloud(
-        Rect2D(0.0, 0.0, 0.0, 0.0),
-        listOf(
-            listOf("health_orb", "health_pip"),
-            listOf("health_pip")
-        )
-    ).apply {
-        mass = ParticleRange(10.0, 30.0)
-        velocity = ParticleRange(10.0, 30.0)
-        frequency = 0.0
-    }
+    private val emitter = Fx.blood()
 
     override fun onUpdate(): Boolean {
         val center = gameObject.center()
@@ -90,17 +80,7 @@ class Bleeding(gameObject: GameObject) : Behaviour(gameObject) {
 class Enraged(gameObject: GameObject, val mask: Int) : Behaviour(gameObject) {
     override var spriteName: String? = "status_enraged"
 
-    private val emitter = Fx.cloud(
-        Rect2D(0.0, 0.0, 0.0, 0.0),
-        listOf(
-            listOf("health_orb", "health_pip"),
-            listOf("health_pip")
-        )
-    ).apply {
-        mass = ParticleRange(10.0, 30.0)
-        velocity = ParticleRange(10.0, 30.0)
-        frequency = 0.0
-    }
+    private val emitter = Fx.blood()
 
     override fun onDamage(damage: Damage) {
         if (damage.dealer != null && damage.dealer.isTagged(mask)) {

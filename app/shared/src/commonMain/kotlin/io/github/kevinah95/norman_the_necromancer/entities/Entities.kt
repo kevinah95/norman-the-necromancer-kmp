@@ -127,62 +127,82 @@ fun createSkeletonLord(): GameObject {
     return unit
 }
 
+/**
+ * Base factory for hostile mobile units that march left towards Norman.
+ * Centralizes standard physics, collision tags, and march behaviour.
+ */
+fun createEnemy(
+    spriteName: String,
+    spriteWidth: Int,
+    spriteHeight: Int,
+    hp: Int = 1,
+    souls: Int = 5,
+    updateSpeed: Double = 600.0,
+    corpseChance: Double = 0.75,
+    marchStep: Double = -16.0
+): GameObject {
+    val unit = GameObject().apply {
+        this.spriteName = spriteName
+        this.spriteWidth = spriteWidth
+        this.spriteHeight = spriteHeight
+        this.friction = 0.8
+        this.mass = 75.0
+        this.x = 400.0
+        this.tags = Tags.LIVING or Tags.MOBILE
+        this.hp = hp
+        this.maxHp = hp
+        this.updateSpeed = updateSpeed
+        this.corpseChance = corpseChance
+        this.souls = souls
+    }
+    unit.addBehaviour(March(unit, marchStep))
+    return unit
+}
+
 fun createVillager(): GameObject {
     val variants = listOf("villager_1", "villager_2", "villager_3", "villager_4")
     val selectedSprite = variants.randomElement()
-    val unit = GameObject().apply {
-        spriteName = selectedSprite
-        spriteWidth = when (selectedSprite) {
-            "villager_1" -> 14
-            "villager_2" -> 12
-            "villager_3" -> 13
-            else -> 14
-        }
-        spriteHeight = 15
-        friction = 0.8
-        mass = 75.0
-        x = 400.0
-        tags = Tags.LIVING or Tags.MOBILE
-        hp = 1
-        maxHp = 1
-        updateSpeed = 600.0
-        corpseChance = 0.75
-        souls = 5
+    val width = when (selectedSprite) {
+        "villager_1" -> 14
+        "villager_2" -> 12
+        "villager_3" -> 13
+        else -> 14
     }
-    unit.addBehaviour(March(unit, -16.0))
-    return unit
+    return createEnemy(
+        spriteName = selectedSprite,
+        spriteWidth = width,
+        spriteHeight = 15,
+        hp = 1,
+        souls = 5,
+        updateSpeed = 600.0,
+        corpseChance = 0.75
+    )
 }
 
 fun createBandit(): GameObject {
-    val unit = createVillager().apply {
+    return createVillager().apply {
         hp = 2
         maxHp = 2
     }
-    return unit
 }
 
-fun createArcher(): GameObject {
-    val unit = createVillager().apply {
-        spriteName = "archer"
-        spriteWidth = 13
-        spriteHeight = 15
-        updateSpeed = 300.0
-        hp = 2
-        maxHp = 2
-    }
-    return unit
-}
+fun createArcher(): GameObject = createEnemy(
+    spriteName = "archer",
+    spriteWidth = 13,
+    spriteHeight = 15,
+    hp = 2,
+    updateSpeed = 300.0
+)
 
 fun createMonk(): GameObject {
-    val unit = createVillager().apply {
-        spriteName = "monk"
-        spriteWidth = 10
-        spriteHeight = 15
+    val unit = createEnemy(
+        spriteName = "monk",
+        spriteWidth = 10,
+        spriteHeight = 15,
+        hp = 3,
+        souls = 10,
         updateSpeed = 600.0
-        hp = 3
-        maxHp = 3
-        souls = 10
-    }
+    )
     val heal = object : Behaviour(unit) {
         init { turns = 5 }
         override fun onUpdate(): Boolean {
@@ -192,14 +212,7 @@ fun createMonk(): GameObject {
                     game.damage(obj, -1, gameObject)
                 }
             }
-            Fx.cloud(
-                gameObject.bounds(),
-                listOf(
-                    listOf("p_star_1", "p_star_2", "p_star_3"),
-                    listOf("p_star_2", "p_star_3", "p_star_4"),
-                    listOf("p_star_1", "p_star_3")
-                )
-            ).burst(10).remove()
+            Fx.holy(gameObject.bounds()).burst(10).remove()
             return false
         }
     }
@@ -207,29 +220,24 @@ fun createMonk(): GameObject {
     return unit
 }
 
-fun createChampion(): GameObject {
-    val unit = createVillager().apply {
-        spriteName = "champion"
-        spriteWidth = 22
-        spriteHeight = 20
-        updateSpeed = 1000.0
-        hp = 10
-        maxHp = 10
-        souls = 25
-    }
-    return unit
-}
+fun createChampion(): GameObject = createEnemy(
+    spriteName = "champion",
+    spriteWidth = 22,
+    spriteHeight = 20,
+    hp = 10,
+    souls = 25,
+    updateSpeed = 1000.0
+)
 
 fun createShellKnight(): GameObject {
-    val unit = createVillager().apply {
-        spriteName = "shell_knight_up"
-        spriteWidth = 18
-        spriteHeight = 17
+    val unit = createEnemy(
+        spriteName = "shell_knight_up",
+        spriteWidth = 18,
+        spriteHeight = 17,
+        hp = 5,
+        souls = 15,
         updateSpeed = 1000.0
-        hp = 5
-        maxHp = 5
-        souls = 15
-    }
+    )
 
     var shelled = false
     var timer = 0
@@ -254,41 +262,37 @@ fun createShellKnight(): GameObject {
 }
 
 fun createPiper(): GameObject {
-    val unit = createVillager().apply {
-        spriteName = "piper"
-        spriteWidth = 12
-        spriteHeight = 14
+    val unit = createEnemy(
+        spriteName = "piper",
+        spriteWidth = 12,
+        spriteHeight = 14,
+        hp = 15,
+        souls = 100,
         updateSpeed = 500.0
-        hp = 15
-        maxHp = 15
-        souls = 100
-    }
+    )
     unit.addBehaviour(Summon(unit, ::createRat, 2000.0))
     return unit
 }
 
-fun createRat(): GameObject {
-    val unit = createVillager().apply {
-        spriteName = "rat"
-        spriteWidth = 20
-        spriteHeight = 6
-        updateSpeed = 200.0
-        souls = 5
-        corpseChance = 0.0
-    }
-    return unit
-}
+fun createRat(): GameObject = createEnemy(
+    spriteName = "rat",
+    spriteWidth = 20,
+    spriteHeight = 6,
+    hp = 1,
+    souls = 5,
+    updateSpeed = 200.0,
+    corpseChance = 0.0
+)
 
 fun createRageKnight(): GameObject {
-    val unit = createVillager().apply {
-        spriteName = "rage_knight"
-        spriteWidth = 14
-        spriteHeight = 15
+    val unit = createEnemy(
+        spriteName = "rage_knight",
+        spriteWidth = 14,
+        spriteHeight = 15,
+        hp = 5,
+        souls = 20,
         updateSpeed = 500.0
-        hp = 5
-        maxHp = 5
-        souls = 20
-    }
+    )
 
     val march = unit.getBehaviour<March>()
     val step = march?.step ?: -16.0
@@ -338,14 +342,13 @@ fun createRoyalGuardOrb(): GameObject {
 }
 
 fun createRoyalGuard(): GameObject {
-    val unit = createVillager().apply {
-        spriteName = "royal_guard"
-        spriteWidth = 16
-        spriteHeight = 17
-        hp = 4
-        maxHp = 4
+    val unit = createEnemy(
+        spriteName = "royal_guard",
+        spriteWidth = 16,
+        spriteHeight = 17,
+        hp = 4,
         souls = 10
-    }
+    )
     val march = unit.getBehaviour<March>()
     var shielded = false
 
@@ -381,14 +384,14 @@ fun createRoyalGuard(): GameObject {
 }
 
 fun createWizard(): GameObject {
-    val unit = createVillager().apply {
-        spriteName = "wizard"
-        spriteWidth = 14
-        spriteHeight = 17
-        hp = 15
-        maxHp = 15
-        souls = 10
-    }
+    val unit = createEnemy(
+        spriteName = "wizard",
+        spriteWidth = 14,
+        spriteHeight = 17,
+        hp = 15,
+        souls = 10,
+        updateSpeed = 500.0
+    )
     unit.addBehaviour(Summon(unit, ::createPortal, 3000.0))
     return unit
 }
@@ -411,25 +414,19 @@ fun createPortal(): GameObject {
             3000.0
         )
     )
-    unit.emitter = Fx.cloud(
-        unit.bounds(),
-        listOf(
-            listOf("p_blue_1", "p_blue_2", "p_blue_3"),
-            listOf("p_blue_2", "p_blue_3"),
-            listOf("p_blue_3")
-        )
-    ).apply { frequency = 0.2 }
+    unit.emitter = Fx.portal(unit.bounds())
     return unit
 }
 
 fun createTheKing(): GameObject {
-    val unit = createVillager().apply {
-        spriteName = "the_king"
-        spriteWidth = 29
-        spriteHeight = 31
+    val unit = createEnemy(
+        spriteName = "the_king",
+        spriteWidth = 29,
+        spriteHeight = 31,
+        hp = 100,
+        souls = 5,
         updateSpeed = 5000.0
-        hp = 100
-        maxHp = 100
+    ).apply {
         behaviours.clear()
         mass = 1000.0
         emitter = Fx.royalty().apply {

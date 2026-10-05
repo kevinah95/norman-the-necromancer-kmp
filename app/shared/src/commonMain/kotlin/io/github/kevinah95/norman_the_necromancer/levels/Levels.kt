@@ -3,6 +3,15 @@ package io.github.kevinah95.norman_the_necromancer.levels
 import io.github.kevinah95.norman_the_necromancer.core.*
 import io.github.kevinah95.norman_the_necromancer.entities.*
 
+/**
+ * Manages wave and level progression using an interpreter pattern.
+ *
+ * ## Script Format:
+ * The [defaultLevelScript] array contains sequential command tokens:
+ * - Pairs of `[quantity, enemyId]`: Spawns `quantity` enemies of type `enemyId`.
+ * - [END_OF_WAVE]: Halts execution until all living enemies on the battlefield are eliminated.
+ * - [END_OF_LEVEL]: Marks the completion of a level wave sequence, triggering the shop or victory screen.
+ */
 object LevelManager {
     const val END_OF_LEVEL: Int = 99
     const val END_OF_WAVE: Int = 98

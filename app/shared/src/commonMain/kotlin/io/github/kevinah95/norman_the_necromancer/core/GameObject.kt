@@ -95,16 +95,23 @@ open class GameObject {
         return behaviours.filterIsInstance<T>().firstOrNull()
     }
 
-    fun onFrame(dtMs: Double) {
-        val list = behaviours.toList()
-        for (b in list) {
-            b.onFrame(dtMs)
+    /**
+     * Helper to dispatch an event to all attached behaviours.
+     * Takes a snapshot with [toList] to safely allow behaviours to attach or remove
+     * behaviours during event handling without ConcurrentModificationException.
+     */
+    private inline fun dispatchToBehaviours(action: (Behaviour) -> Unit) {
+        for (b in behaviours.toList()) {
+            action(b)
         }
     }
 
+    fun onFrame(dtMs: Double) = dispatchToBehaviours { it.onFrame(dtMs) }
+
     fun onUpdate() {
-        val list = behaviours.toList()
-        for (b in list) {
+        // Explicit loop because returning true acts as a circuit breaker
+        // (e.g. Frozen stops subsequent behaviours from ticking this turn).
+        for (b in behaviours.toList()) {
             b.timer++
             if (b.timer >= b.turns) {
                 b.timer = 0
@@ -115,26 +122,17 @@ open class GameObject {
 
     fun onDamage(damage: Damage) {
         onDamageAction?.invoke(damage)
-        val list = behaviours.toList()
-        for (b in list) {
-            b.onDamage(damage)
-        }
+        dispatchToBehaviours { it.onDamage(damage) }
     }
 
     fun onDeath(death: Death) {
         onDeathAction?.invoke(death)
-        val list = behaviours.toList()
-        for (b in list) {
-            b.onDeath(death)
-        }
+        dispatchToBehaviours { it.onDeath(death) }
     }
 
     fun onBounce() {
         onBounceAction?.invoke()
-        val list = behaviours.toList()
-        for (b in list) {
-            b.onBounce()
-        }
+        dispatchToBehaviours { it.onBounce() }
         if (despawnOnBounce) {
             gameSession?.despawn(this)
         }
@@ -142,10 +140,7 @@ open class GameObject {
 
     fun onCollision(target: GameObject) {
         onCollisionAction?.invoke(target)
-        val list = behaviours.toList()
-        for (b in list) {
-            b.onCollision(target)
-        }
+        dispatchToBehaviours { it.onCollision(target) }
         if (despawnOnCollision) {
             gameSession?.despawn(this)
         }

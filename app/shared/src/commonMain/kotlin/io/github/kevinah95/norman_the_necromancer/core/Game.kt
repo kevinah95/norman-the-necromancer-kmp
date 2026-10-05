@@ -78,6 +78,7 @@ class Game : GameSession {
     fun getStreakMultiplier(): Double = streak.toDouble() / MAX_STREAK.toDouble()
 
     fun addRitual(ritual: Ritual) {
+        ritual.game = this
         rituals.add(ritual)
         ritual.onActive()
     }

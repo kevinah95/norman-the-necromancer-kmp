@@ -138,4 +138,47 @@ object Fx {
             )
         )
     }
+
+    fun blood(area: Rect2D = Rect2D()): ParticleEmitter {
+        return register(
+            ParticleEmitter(
+                x = area.x,
+                y = area.y,
+                w = area.w,
+                h = area.h,
+                duration = ParticleRange(500.0, 1000.0),
+                velocity = ParticleRange(10.0, 30.0),
+                angle = ParticleRange(DEG_90 - 0.2, 0.4),
+                bounce = ParticleRange(0.0, 0.0),
+                frequency = 0.0,
+                mass = ParticleRange(10.0, 30.0),
+                variants = listOf(
+                    listOf("health_orb", "health_pip"),
+                    listOf("health_pip")
+                )
+            )
+        )
+    }
+
+    fun holy(area: Rect2D): ParticleEmitter {
+        return cloud(
+            area,
+            listOf(
+                listOf("p_star_1", "p_star_2", "p_star_3"),
+                listOf("p_star_2", "p_star_3", "p_star_4"),
+                listOf("p_star_1", "p_star_3")
+            )
+        )
+    }
+
+    fun portal(area: Rect2D): ParticleEmitter {
+        return cloud(
+            area,
+            listOf(
+                listOf("p_blue_1", "p_blue_2", "p_blue_3"),
+                listOf("p_blue_2", "p_blue_3"),
+                listOf("p_blue_3")
+            )
+        ).apply { frequency = 0.2 }
+    }
 }

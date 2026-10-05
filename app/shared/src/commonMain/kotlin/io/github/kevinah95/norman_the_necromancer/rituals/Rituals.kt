@@ -8,6 +8,7 @@ import io.github.kevinah95.norman_the_necromancer.fx.Fx
 import io.github.kevinah95.norman_the_necromancer.fx.ParticleRange
 import io.github.kevinah95.norman_the_necromancer.shop.ShopManager
 
+
 // Ritual tags bitmasks
 const val TAG_NONE: Int = 0
 const val TAG_BOUNCING: Int = 1 shl 0
@@ -44,7 +45,7 @@ val DoubleshotRitual = object : Ritual(
     rarity = Rarity.RARE
 ) {
     override fun onActive() {
-        val game = (ShopManager.currentGame ?: return)
+        val game = game ?: return
         game.spell.shotsPerRound = 2
     }
 }
@@ -97,7 +98,7 @@ val CeilingRitual = object : Ritual(
     requiredTags = TAG_BOUNCING
 ) {
     override fun onActive() {
-        val game = (ShopManager.currentGame ?: return)
+        val game = game ?: return
         game.stage.ceiling = 48.0
     }
 }
@@ -181,7 +182,7 @@ val ImpatienceRitual = object : Ritual(
     TAG_NONE
 ) {
     override fun onActive() {
-        val game = (ShopManager.currentGame ?: return)
+        val game = game ?: return
         game.ability.cooldown /= 2.0
     }
 }
@@ -218,7 +219,7 @@ val AllegianceRitual = object : Ritual(
     TAG_NONE
 ) {
     override fun onResurrect() {
-        val game = (ShopManager.currentGame ?: return)
+        val game = game ?: return
         for (i in 0 until 3) {
             val unit = createSkeletonLord()
             unit.updateSpeed = 200.0
@@ -233,7 +234,7 @@ val SalvageRitual = object : Ritual(
     TAG_NONE
 ) {
     override fun onLevelEnd() {
-        val game = (ShopManager.currentGame ?: return)
+        val game = game ?: return
         val corpses = game.objects.filter { it.isTagged(Tags.CORPSE) }
         for (corpse in corpses) {
             val c = corpse.center()
@@ -302,7 +303,7 @@ val GiantsRitual = object : Ritual(
 ) {
     override fun onResurrection(gameObject: GameObject) {
         if (randomFloat() < 0.2) {
-            val game = (ShopManager.currentGame ?: return)
+            val game = (game ?: gameObjectSession(gameObject)) ?: return
             val x = gameObject.x
             val y = gameObject.y
             game.despawn(gameObject)
@@ -317,7 +318,7 @@ val AvariceRitual = object : Ritual(
     TAG_NONE
 ) {
     override fun onResurrection(gameObject: GameObject) {
-        ShopManager.currentGame?.addSouls(1)
+        (game ?: gameObjectSession(gameObject))?.addSouls(1)
     }
 }
 

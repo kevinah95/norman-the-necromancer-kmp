@@ -14,6 +14,9 @@ data class Point2D(var x: Double = 0.0, var y: Double = 0.0) {
 }
 
 data class Rect2D(var x: Double = 0.0, var y: Double = 0.0, var w: Double = 0.0, var h: Double = 0.0) {
+    fun contains(px: Double, py: Double): Boolean = px in x..(x + w) && py in y..(y + h)
+    fun contains(point: Point2D): Boolean = contains(point.x, point.y)
+
     fun overlaps(other: Rect2D): Boolean {
         return x < other.x + other.w &&
                 y < other.y + other.h &&

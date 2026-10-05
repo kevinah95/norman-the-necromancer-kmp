@@ -14,6 +14,11 @@ open class Ritual(
     val recursive: Boolean = true,
     val rarity: Rarity = Rarity.COMMON
 ) {
+    /**
+     * Reference to the active [Game] session attached when the ritual is equipped.
+     */
+    var game: Game? = null
+
     open fun onFrame(dtMs: Double) {}
     open fun onActive() {}
     open fun onCast(spell: GameObject) {}
