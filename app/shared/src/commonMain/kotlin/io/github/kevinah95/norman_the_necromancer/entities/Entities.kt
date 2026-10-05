@@ -1,5 +1,6 @@
 package io.github.kevinah95.norman_the_necromancer.entities
 
+import io.github.kevinah95.norman_the_necromancer.assets.GameSprites
 import io.github.kevinah95.norman_the_necromancer.behaviours.*
 import io.github.kevinah95.norman_the_necromancer.core.*
 import io.github.kevinah95.norman_the_necromancer.fx.Fx
@@ -7,7 +8,7 @@ import io.github.kevinah95.norman_the_necromancer.fx.ParticleRange
 
 fun createCorpse(): GameObject {
     return GameObject().apply {
-        spriteName = "skull"
+        spriteName = GameSprites.SKULL
         spriteWidth = 8
         spriteHeight = 7
         mass = 100.0
@@ -18,7 +19,7 @@ fun createCorpse(): GameObject {
 fun createPlayer(): GameObject {
     val player = GameObject().apply {
         x = 5.0
-        spriteName = "norman_arms_down"
+        spriteName = GameSprites.NORMAN_ARMS_DOWN
         spriteWidth = 16
         spriteHeight = 15
         tags = Tags.PLAYER or Tags.UNDEAD
@@ -44,7 +45,7 @@ fun createPlayer(): GameObject {
 
 fun createSpell(): GameObject {
     val obj = GameObject().apply {
-        spriteName = "p_green_skull"
+        spriteName = GameSprites.P_GREEN_SKULL
         spriteWidth = 4
         spriteHeight = 4
         tags = Tags.SPELL
@@ -61,12 +62,12 @@ fun createSpell(): GameObject {
 
 fun createBleedSpell(): GameObject {
     val spell = createSpell().apply {
-        spriteName = "p_red_skull"
+        spriteName = GameSprites.P_RED_SKULL
         emitter?.apply {
             variants = listOf(
-                listOf("p_red_3", "p_red_2", "p_red_1"),
-                listOf("p_red_4", "p_red_3", "p_red_2"),
-                listOf("p_red_3", "p_red_2", "p_red_1")
+                listOf(GameSprites.P_RED_3, GameSprites.P_RED_2, GameSprites.P_RED_1),
+                listOf(GameSprites.P_RED_4, GameSprites.P_RED_3, GameSprites.P_RED_2),
+                listOf(GameSprites.P_RED_3, GameSprites.P_RED_2, GameSprites.P_RED_1)
             )
             frequency = 5.0
             angle = ParticleRange(DEG_180, 0.0)
@@ -84,15 +85,15 @@ fun createBleedSpell(): GameObject {
 
 fun createLightningSpell(): GameObject {
     val spell = createSpell().apply {
-        spriteName = "p_skull_yellow"
+        spriteName = GameSprites.P_SKULL_YELLOW
         emitter?.apply {
             frequency = 0.8
             variants = listOf(
-                listOf("p_lightning_1", "p_lightning_2", "p_lightning_3", "p_lightning_4"),
-                listOf("p_lightning_1", "p_lightning_2", "p_lightning_3", "p_lightning_5"),
-                listOf("p_lightning_2", "p_lightning_3", "p_lightning_6"),
-                listOf("p_lightning_4", "p_lightning_5", "p_lightning_6"),
-                listOf("p_purple_5")
+                listOf(GameSprites.P_LIGHTNING_1, GameSprites.P_LIGHTNING_2, GameSprites.P_LIGHTNING_3, GameSprites.P_LIGHTNING_4),
+                listOf(GameSprites.P_LIGHTNING_1, GameSprites.P_LIGHTNING_2, GameSprites.P_LIGHTNING_3, GameSprites.P_LIGHTNING_5),
+                listOf(GameSprites.P_LIGHTNING_2, GameSprites.P_LIGHTNING_3, GameSprites.P_LIGHTNING_6),
+                listOf(GameSprites.P_LIGHTNING_4, GameSprites.P_LIGHTNING_5, GameSprites.P_LIGHTNING_6),
+                listOf(GameSprites.P_PURPLE_5)
             )
         }
     }
@@ -101,7 +102,7 @@ fun createLightningSpell(): GameObject {
 
 fun createSkeleton(): GameObject {
     val unit = GameObject().apply {
-        spriteName = "skeleton"
+        spriteName = GameSprites.SKELETON
         spriteWidth = 13
         spriteHeight = 15
         tags = Tags.UNDEAD or Tags.MOBILE
@@ -117,7 +118,7 @@ fun createSkeleton(): GameObject {
 
 fun createSkeletonLord(): GameObject {
     val unit = createSkeleton().apply {
-        spriteName = "big_skeleton"
+        spriteName = GameSprites.BIG_SKELETON
         spriteWidth = 11
         spriteHeight = 20
         hp = 3
@@ -160,12 +161,12 @@ fun createEnemy(
 }
 
 fun createVillager(): GameObject {
-    val variants = listOf("villager_1", "villager_2", "villager_3", "villager_4")
+    val variants = listOf(GameSprites.VILLAGER_1, GameSprites.VILLAGER_2, GameSprites.VILLAGER_3, GameSprites.VILLAGER_4)
     val selectedSprite = variants.randomElement()
     val width = when (selectedSprite) {
-        "villager_1" -> 14
-        "villager_2" -> 12
-        "villager_3" -> 13
+        GameSprites.VILLAGER_1 -> 14
+        GameSprites.VILLAGER_2 -> 12
+        GameSprites.VILLAGER_3 -> 13
         else -> 14
     }
     return createEnemy(
@@ -187,7 +188,7 @@ fun createBandit(): GameObject {
 }
 
 fun createArcher(): GameObject = createEnemy(
-    spriteName = "archer",
+    spriteName = GameSprites.ARCHER,
     spriteWidth = 13,
     spriteHeight = 15,
     hp = 2,
@@ -196,7 +197,7 @@ fun createArcher(): GameObject = createEnemy(
 
 fun createMonk(): GameObject {
     val unit = createEnemy(
-        spriteName = "monk",
+        spriteName = GameSprites.MONK,
         spriteWidth = 10,
         spriteHeight = 15,
         hp = 3,
@@ -221,7 +222,7 @@ fun createMonk(): GameObject {
 }
 
 fun createChampion(): GameObject = createEnemy(
-    spriteName = "champion",
+    spriteName = GameSprites.CHAMPION,
     spriteWidth = 22,
     spriteHeight = 20,
     hp = 10,
@@ -231,7 +232,7 @@ fun createChampion(): GameObject = createEnemy(
 
 fun createShellKnight(): GameObject {
     val unit = createEnemy(
-        spriteName = "shell_knight_up",
+        spriteName = GameSprites.SHELL_KNIGHT_UP,
         spriteWidth = 18,
         spriteHeight = 17,
         hp = 5,
@@ -244,10 +245,10 @@ fun createShellKnight(): GameObject {
     val shell = object : Behaviour(unit) {
         override fun onUpdate(): Boolean {
             shelled = (timer++ % 4) > 1
-            gameObject.spriteName = if (shelled) "shell_knight_down" else "shell_knight_up"
+            gameObject.spriteName = if (shelled) GameSprites.SHELL_KNIGHT_DOWN else GameSprites.SHELL_KNIGHT_UP
             gameObject.spriteWidth = if (shelled) 20 else 18
             gameObject.spriteHeight = if (shelled) 11 else 17
-            spriteName = if (shelled) "status_shielded" else null
+            spriteName = if (shelled) GameSprites.STATUS_SHIELDED else null
             return false
         }
 
@@ -263,7 +264,7 @@ fun createShellKnight(): GameObject {
 
 fun createPiper(): GameObject {
     val unit = createEnemy(
-        spriteName = "piper",
+        spriteName = GameSprites.PIPER,
         spriteWidth = 12,
         spriteHeight = 14,
         hp = 15,
@@ -275,7 +276,7 @@ fun createPiper(): GameObject {
 }
 
 fun createRat(): GameObject = createEnemy(
-    spriteName = "rat",
+    spriteName = GameSprites.RAT,
     spriteWidth = 20,
     spriteHeight = 6,
     hp = 1,
@@ -286,7 +287,7 @@ fun createRat(): GameObject = createEnemy(
 
 fun createRageKnight(): GameObject {
     val unit = createEnemy(
-        spriteName = "rage_knight",
+        spriteName = GameSprites.RAGE_KNIGHT,
         spriteWidth = 14,
         spriteHeight = 15,
         hp = 5,
@@ -305,13 +306,13 @@ fun createRageKnight(): GameObject {
             angry = !angry
             if (angry) {
                 gameObject.addBehaviour(enraged)
-                gameObject.spriteName = "rage_knight_enraged"
+                gameObject.spriteName = GameSprites.RAGE_KNIGHT_ENRAGED
                 gameObject.spriteWidth = 15
                 gameObject.spriteHeight = 20
                 march?.step = 0.0
             } else {
                 gameObject.removeBehaviour(enraged)
-                gameObject.spriteName = "rage_knight"
+                gameObject.spriteName = GameSprites.RAGE_KNIGHT
                 gameObject.spriteWidth = 14
                 gameObject.spriteHeight = 15
                 march?.step = step
@@ -325,7 +326,7 @@ fun createRageKnight(): GameObject {
 
 fun createRoyalGuardOrb(): GameObject {
     val orb = GameObject().apply {
-        spriteName = "yellow_orb"
+        spriteName = GameSprites.YELLOW_ORB
         spriteWidth = 5
         spriteHeight = 5
         tags = Tags.SPELL
@@ -343,7 +344,7 @@ fun createRoyalGuardOrb(): GameObject {
 
 fun createRoyalGuard(): GameObject {
     val unit = createEnemy(
-        spriteName = "royal_guard",
+        spriteName = GameSprites.ROYAL_GUARD,
         spriteWidth = 16,
         spriteHeight = 17,
         hp = 4,
@@ -357,7 +358,7 @@ fun createRoyalGuard(): GameObject {
         override fun onUpdate(): Boolean {
             shielded = !shielded
             march?.step = if (shielded) 0.0 else -16.0
-            gameObject.spriteName = if (shielded) "royal_guard_shielded" else "royal_guard"
+            gameObject.spriteName = if (shielded) GameSprites.ROYAL_GUARD_SHIELDED else GameSprites.ROYAL_GUARD
             gameObject.spriteWidth = if (shielded) 15 else 16
             return false
         }
@@ -385,7 +386,7 @@ fun createRoyalGuard(): GameObject {
 
 fun createWizard(): GameObject {
     val unit = createEnemy(
-        spriteName = "wizard",
+        spriteName = GameSprites.WIZARD,
         spriteWidth = 14,
         spriteHeight = 17,
         hp = 15,
@@ -398,7 +399,7 @@ fun createWizard(): GameObject {
 
 fun createPortal(): GameObject {
     val unit = GameObject().apply {
-        spriteName = "portal"
+        spriteName = GameSprites.PORTAL
         spriteWidth = 9
         spriteHeight = 15
         tags = Tags.LIVING
@@ -420,7 +421,7 @@ fun createPortal(): GameObject {
 
 fun createTheKing(): GameObject {
     val unit = createEnemy(
-        spriteName = "the_king",
+        spriteName = GameSprites.THE_KING,
         spriteWidth = 29,
         spriteHeight = 31,
         hp = 100,
@@ -456,7 +457,7 @@ fun createTheKing(): GameObject {
                 phase = 4
                 io.github.kevinah95.norman_the_necromancer.audio.GameAudio.onKingPhase4()
                 gameObject.hp = gameObject.maxHp
-                gameObject.spriteName = "the_king_on_foot"
+                gameObject.spriteName = GameSprites.THE_KING_ON_FOOT
                 gameObject.spriteWidth = 22
                 gameObject.spriteHeight = 22
                 gameObject.updateSpeed = 1000.0

@@ -2,6 +2,7 @@ package io.github.kevinah95.norman_the_necromancer.renderer
 
 import io.github.kevinah95.norman_the_necromancer.GameVersion
 import io.github.kevinah95.norman_the_necromancer.assets.GameAtlas
+import io.github.kevinah95.norman_the_necromancer.assets.GameSprites
 import io.github.kevinah95.norman_the_necromancer.behaviours.Frozen
 import io.github.kevinah95.norman_the_necromancer.core.*
 import io.github.kevinah95.norman_the_necromancer.fx.Fx
@@ -230,10 +231,10 @@ class GameRenderer {
     ) {
         val count = (game.stage.width / 16.0).toInt()
         for (i in 0 until count) {
-            val wallSprite = if (i % 5 != 0) "wall" else "door"
+            val wallSprite = if (i % 5 != 0) GameSprites.WALL else GameSprites.DOOR
             drawSceneSprite(batch, ctx, wallSprite, i * 16.0, 0.0, shakeX, shakeY)
-            drawSceneSprite(batch, ctx, "floor", i * 16.0, -8.0, shakeX, shakeY)
-            drawSceneSprite(batch, ctx, "ceiling", i * 16.0, game.stage.ceiling, shakeX, shakeY)
+            drawSceneSprite(batch, ctx, GameSprites.FLOOR, i * 16.0, -8.0, shakeX, shakeY)
+            drawSceneSprite(batch, ctx, GameSprites.CEILING, i * 16.0, game.stage.ceiling, shakeX, shakeY)
         }
     }
 
@@ -275,16 +276,16 @@ class GameRenderer {
                 val sh = slice?.height ?: obj.spriteHeight
                 val screenX = obj.x + shakeX
                 val screenY = sceneOriginY - obj.y - sh + shakeY
-                drawNineSlice(batch, ctx, "ice", screenX, screenY, sw.toDouble(), sh.toDouble())
+                drawNineSlice(batch, ctx, GameSprites.ICE, screenX, screenY, sw.toDouble(), sh.toDouble())
             }
 
             // Health orbs
             if (obj.maxHp > 1 && obj !== game.player) {
                 if (obj.maxHp < 10) {
                     val cx = obj.center().x
-                    drawOrbs(batch, ctx, cx, -6.0, obj.hp, obj.maxHp, "health_orb", "health_orb_empty", shakeX, shakeY)
+                    drawOrbs(batch, ctx, cx, -6.0, obj.hp, obj.maxHp, GameSprites.HEALTH_ORB, GameSprites.HEALTH_ORB_EMPTY, shakeX, shakeY)
                 } else {
-                    drawSceneSprite(batch, ctx, "health_orb", obj.x, -6.0, shakeX, shakeY)
+                    drawSceneSprite(batch, ctx, GameSprites.HEALTH_ORB, obj.x, -6.0, shakeX, shakeY)
                     val screenX = obj.x + 6.0 + shakeX
                     val screenY = sceneOriginY - 0.0 + shakeY
                     write(batch, ctx, "${obj.hp}/${obj.maxHp}", screenX, screenY)
@@ -332,7 +333,7 @@ class GameRenderer {
         touchAimActive: Boolean = false
     ) {
         val pt = game.getCastingPoint()
-        drawSceneSprite(batch, ctx, "reticle", pt.x - 3.5, pt.y - 3.5, shakeX, shakeY)
+        drawSceneSprite(batch, ctx, GameSprites.RETICLE, pt.x - 3.5, pt.y - 3.5, shakeX, shakeY)
     }
 
     private fun drawHud(
@@ -344,17 +345,17 @@ class GameRenderer {
         if (game.state == GameState.INTRO || game.state == GameState.WIN) return
 
         // Norman icon
-        drawSprite(batch, ctx, "norman_icon", 2.0, 2.0)
+        drawSprite(batch, ctx, GameSprites.NORMAN_ICON, 2.0, 2.0)
 
         // Player HP
         for (i in 0 until game.player.maxHp) {
-            val sName = if (i < game.player.hp) "health_orb" else "health_orb_empty"
+            val sName = if (i < game.player.hp) GameSprites.HEALTH_ORB else GameSprites.HEALTH_ORB_EMPTY
             drawSprite(batch, ctx, sName, (14 + i * 5).toDouble(), 3.0)
         }
 
         // Spell Casts
         for (i in 0 until game.spell.maxCasts) {
-            val sName = if (i < game.spell.casts) "cast_orb" else "cast_orb_empty"
+            val sName = if (i < game.spell.casts) GameSprites.CAST_ORB else GameSprites.CAST_ORB_EMPTY
             drawSprite(batch, ctx, sName, (14 + i * 5).toDouble(), 9.0)
         }
 
@@ -372,7 +373,7 @@ class GameRenderer {
         val pauseBtnY = 8.0
         val pauseBtnW = 46.0
         val pauseBtnH = 18.0
-        drawNineSlice(batch, ctx, "pink_frame", pauseBtnX, pauseBtnY, pauseBtnW, pauseBtnH)
+        drawNineSlice(batch, ctx, GameSprites.PINK_FRAME, pauseBtnX, pauseBtnY, pauseBtnW, pauseBtnH)
         val pauseLabel = if (isPaused) io.github.kevinah95.norman_the_necromancer.i18n.GameStrings.hudPlay else io.github.kevinah95.norman_the_necromancer.i18n.GameStrings.hudPause
         val labelW = getTextWidth(pauseLabel)
         write(batch, ctx, pauseLabel, pauseBtnX + (pauseBtnW - labelW) / 2.0, pauseBtnY + 6.0)
@@ -386,8 +387,8 @@ class GameRenderer {
             val progress = clamp(game.ability.timer / game.ability.cooldown, 0.0, 1.0)
             val fillW = (bw * (1.0 - progress)).toInt()
 
-            drawNineSlice(batch, ctx, "pink_frame", bx, by, fillW.toDouble(), bh)
-            drawSprite(batch, ctx, "skull", bx + 2.0, by + 4.0)
+            drawNineSlice(batch, ctx, GameSprites.PINK_FRAME, bx, by, fillW.toDouble(), bh)
+            drawSprite(batch, ctx, GameSprites.SKULL, bx + 2.0, by + 4.0)
 
             val ready = progress >= 1.0
             val label = if (ready) io.github.kevinah95.norman_the_necromancer.i18n.GameStrings.hudResurrectReady else io.github.kevinah95.norman_the_necromancer.i18n.GameStrings.hudResurrectCooldown(((1.0 - progress) * game.ability.cooldown / 1000).toInt())
@@ -406,14 +407,14 @@ class GameRenderer {
 
         val pauseTitle = io.github.kevinah95.norman_the_necromancer.i18n.GameStrings.pauseTitle
         val titleW = getTextWidth(pauseTitle)
-        drawNineSlice(batch, ctx, "pink_frame", modalX, modalY, modalW, modalH)
+        drawNineSlice(batch, ctx, GameSprites.PINK_FRAME, modalX, modalY, modalW, modalH)
         write(batch, ctx, pauseTitle, modalX + (modalW - titleW) / 2.0, modalY + 14.0)
 
         val btnW = 96.0
         val btnH = 18.0
         val btnX = modalX + (modalW - btnW) / 2.0
         val btnY = modalY + 34.0
-        drawNineSlice(batch, ctx, "pink_frame", btnX, btnY, btnW, btnH)
+        drawNineSlice(batch, ctx, GameSprites.PINK_FRAME, btnX, btnY, btnW, btnH)
         val resumeLabel = io.github.kevinah95.norman_the_necromancer.i18n.GameStrings.pauseResume
         val resumeW = getTextWidth(resumeLabel)
         write(batch, ctx, resumeLabel, btnX + (btnW - resumeW) / 2.0, btnY + 6.0)
@@ -487,7 +488,7 @@ class GameRenderer {
                 val langBtnY = 8.0
                 val langBtnW = 60.0
                 val langBtnH = 18.0
-                drawNineSlice(batch, ctx, "pink_frame", langBtnX, langBtnY, langBtnW, langBtnH)
+                drawNineSlice(batch, ctx, GameSprites.PINK_FRAME, langBtnX, langBtnY, langBtnW, langBtnH)
                 val langLabel = io.github.kevinah95.norman_the_necromancer.i18n.GameStrings.langButtonText
                 val langW = getTextWidth(langLabel)
                 write(batch, ctx, langLabel, langBtnX + (langBtnW - langW) / 2.0, langBtnY + 6.0)

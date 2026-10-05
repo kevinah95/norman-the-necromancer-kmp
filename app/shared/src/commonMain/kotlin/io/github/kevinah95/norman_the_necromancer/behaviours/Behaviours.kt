@@ -1,5 +1,6 @@
 package io.github.kevinah95.norman_the_necromancer.behaviours
 
+import io.github.kevinah95.norman_the_necromancer.assets.GameSprites
 import io.github.kevinah95.norman_the_necromancer.core.*
 import io.github.kevinah95.norman_the_necromancer.entities.createLightningSpell
 import io.github.kevinah95.norman_the_necromancer.fx.Fx
@@ -60,7 +61,7 @@ class Damaging(gameObject: GameObject, var amount: Int = 1) : Behaviour(gameObje
 }
 
 class Bleeding(gameObject: GameObject) : Behaviour(gameObject) {
-    override var spriteName: String? = "status_bleeding"
+    override var spriteName: String? = GameSprites.STATUS_BLEEDING
     init { turns = 3 }
     var amount: Int = 1
 
@@ -78,7 +79,7 @@ class Bleeding(gameObject: GameObject) : Behaviour(gameObject) {
 }
 
 class Enraged(gameObject: GameObject, val mask: Int) : Behaviour(gameObject) {
-    override var spriteName: String? = "status_enraged"
+    override var spriteName: String? = GameSprites.STATUS_ENRAGED
 
     private val emitter = Fx.blood()
 
@@ -184,7 +185,7 @@ class HitStreak(gameObject: GameObject) : Behaviour(gameObject) {
 }
 
 class Invulnerable(gameObject: GameObject) : Behaviour(gameObject) {
-    override var spriteName: String? = "status_shielded"
+    override var spriteName: String? = GameSprites.STATUS_SHIELDED
 
     override fun onDamage(damage: Damage) {
         if (damage.amount > 0) {

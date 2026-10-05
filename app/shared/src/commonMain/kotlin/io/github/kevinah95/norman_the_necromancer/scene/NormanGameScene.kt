@@ -1,6 +1,7 @@
 package io.github.kevinah95.norman_the_necromancer.scene
 
 import io.github.kevinah95.norman_the_necromancer.assets.GameAtlas
+import io.github.kevinah95.norman_the_necromancer.assets.GameSprites
 import io.github.kevinah95.norman_the_necromancer.audio.GameAudio
 import io.github.kevinah95.norman_the_necromancer.behaviours.March
 import io.github.kevinah95.norman_the_necromancer.core.*
@@ -71,7 +72,7 @@ class NormanGameScene : Scene() {
 
     private fun initGame() {
         val player = createPlayer()
-        player.spriteName = "skull" // Starts as a skull in the intro!
+        player.spriteName = GameSprites.SKULL // Starts as a skull in the intro!
         game = Game().apply {
             this.player = player
             spawn(player)
@@ -163,7 +164,7 @@ class NormanGameScene : Scene() {
         touchAimActive = false
         isPaused = false
         game.player.hop = 0.0
-        game.player.spriteName = "norman_arms_down"
+        game.player.spriteName = GameSprites.NORMAN_ARMS_DOWN
         GameAudio.useOutroSynths()
     }
 
@@ -208,7 +209,7 @@ class NormanGameScene : Scene() {
     private fun advanceIntroOrStart() {
         advanceDialogueOr {
             game.state = GameState.PLAYING
-            game.player.spriteName = "norman_arms_down"
+            game.player.spriteName = GameSprites.NORMAN_ARMS_DOWN
             game.dialogue.clear()
             GameAudio.play()
             GameAudio.useLevelSynths(game.level)

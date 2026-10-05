@@ -1,5 +1,6 @@
 package io.github.kevinah95.norman_the_necromancer.fx
 
+import io.github.kevinah95.norman_the_necromancer.assets.GameSprites
 import io.github.kevinah95.norman_the_necromancer.core.*
 
 object Fx {
@@ -33,9 +34,9 @@ object Fx {
                 bounce = ParticleRange(0.1, 0.5),
                 mass = ParticleRange(60.0, 0.0),
                 variants = listOf(
-                    listOf("p_bone_1"),
-                    listOf("p_bone_2"),
-                    listOf("p_bone_3")
+                    listOf(GameSprites.P_BONE_1),
+                    listOf(GameSprites.P_BONE_2),
+                    listOf(GameSprites.P_BONE_3)
                 )
             )
         )
@@ -52,9 +53,9 @@ object Fx {
                 mass = ParticleRange(3.0, 0.0),
                 friction = ParticleRange(0.5, 0.0),
                 variants = listOf(
-                    listOf("p_green_1", "p_green_2", "p_green_3"),
-                    listOf("p_green_2", "p_green_3", "p_green_4"),
-                    listOf("p_green_1", "p_green_2", "p_green_3")
+                    listOf(GameSprites.P_GREEN_1, GameSprites.P_GREEN_2, GameSprites.P_GREEN_3),
+                    listOf(GameSprites.P_GREEN_2, GameSprites.P_GREEN_3, GameSprites.P_GREEN_4),
+                    listOf(GameSprites.P_GREEN_1, GameSprites.P_GREEN_2, GameSprites.P_GREEN_3)
                 )
             )
         )
@@ -89,9 +90,9 @@ object Fx {
                 mass = ParticleRange(3.0, 0.0),
                 friction = ParticleRange(0.5, 0.0),
                 variants = listOf(
-                    listOf("p_star_1", "p_star_2", "p_star_3"),
-                    listOf("p_star_2", "p_star_3", "p_star_4"),
-                    listOf("p_star_1", "p_star_3")
+                    listOf(GameSprites.P_STAR_1, GameSprites.P_STAR_2, GameSprites.P_STAR_3),
+                    listOf(GameSprites.P_STAR_2, GameSprites.P_STAR_3, GameSprites.P_STAR_4),
+                    listOf(GameSprites.P_STAR_1, GameSprites.P_STAR_3)
                 )
             )
         )
@@ -110,8 +111,8 @@ object Fx {
                 bounce = ParticleRange(0.0, 0.0),
                 frequency = 0.1,
                 variants = listOf(
-                    listOf("p_dust_1", "p_dust_2"),
-                    listOf("p_dust_2", "p_dust_1", "p_dust_3", "p_dust_1")
+                    listOf(GameSprites.P_DUST_1, GameSprites.P_DUST_2),
+                    listOf(GameSprites.P_DUST_2, GameSprites.P_DUST_1, GameSprites.P_DUST_3, GameSprites.P_DUST_1)
                 )
             )
         )
@@ -131,9 +132,9 @@ object Fx {
                 frequency = 0.0,
                 mass = ParticleRange(-2.0, 0.0),
                 variants = listOf(
-                    listOf("p_green_1", "p_green_2", "p_green_3"),
-                    listOf("p_green_2", "p_green_3", "p_green_4"),
-                    listOf("p_green_1", "p_green_3", "p_green_5")
+                    listOf(GameSprites.P_GREEN_1, GameSprites.P_GREEN_2, GameSprites.P_GREEN_3),
+                    listOf(GameSprites.P_GREEN_2, GameSprites.P_GREEN_3, GameSprites.P_GREEN_4),
+                    listOf(GameSprites.P_GREEN_1, GameSprites.P_GREEN_3, GameSprites.P_GREEN_5)
                 )
             )
         )
@@ -153,8 +154,8 @@ object Fx {
                 frequency = 0.0,
                 mass = ParticleRange(10.0, 30.0),
                 variants = listOf(
-                    listOf("health_orb", "health_pip"),
-                    listOf("health_pip")
+                    listOf(GameSprites.HEALTH_ORB, GameSprites.HEALTH_PIP),
+                    listOf(GameSprites.HEALTH_PIP)
                 )
             )
         )
@@ -164,9 +165,9 @@ object Fx {
         return cloud(
             area,
             listOf(
-                listOf("p_star_1", "p_star_2", "p_star_3"),
-                listOf("p_star_2", "p_star_3", "p_star_4"),
-                listOf("p_star_1", "p_star_3")
+                listOf(GameSprites.P_STAR_1, GameSprites.P_STAR_2, GameSprites.P_STAR_3),
+                listOf(GameSprites.P_STAR_2, GameSprites.P_STAR_3, GameSprites.P_STAR_4),
+                listOf(GameSprites.P_STAR_1, GameSprites.P_STAR_3)
             )
         )
     }
@@ -175,9 +176,9 @@ object Fx {
         return cloud(
             area,
             listOf(
-                listOf("p_blue_1", "p_blue_2", "p_blue_3"),
-                listOf("p_blue_2", "p_blue_3"),
-                listOf("p_blue_3")
+                listOf(GameSprites.P_BLUE_1, GameSprites.P_BLUE_2, GameSprites.P_BLUE_3),
+                listOf(GameSprites.P_BLUE_2, GameSprites.P_BLUE_3),
+                listOf(GameSprites.P_BLUE_3)
             )
         ).apply { frequency = 0.2 }
     }

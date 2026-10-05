@@ -1,5 +1,6 @@
 package io.github.kevinah95.norman_the_necromancer.core
 
+import io.github.kevinah95.norman_the_necromancer.assets.GameSprites
 import io.github.kevinah95.norman_the_necromancer.fx.Fx
 import kotlin.math.abs
 
@@ -142,7 +143,7 @@ class Game : GameSession {
         if (castAnimationTimer > 0) {
             castAnimationTimer -= dtMs
             if (castAnimationTimer <= 0) {
-                player.spriteName = "norman_arms_down"
+                player.spriteName = GameSprites.NORMAN_ARMS_DOWN
             }
         }
     }
@@ -256,7 +257,7 @@ class Game : GameSession {
         if (spell.casts <= 0) return false
         spell.casts--
 
-        player.spriteName = "norman_arms_up"
+        player.spriteName = GameSprites.NORMAN_ARMS_UP
         castAnimationTimer = 500.0
 
         val power = spell.basePower

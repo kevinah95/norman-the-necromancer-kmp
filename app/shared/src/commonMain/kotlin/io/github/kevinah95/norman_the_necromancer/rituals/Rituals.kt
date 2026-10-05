@@ -1,5 +1,6 @@
 package io.github.kevinah95.norman_the_necromancer.rituals
 
+import io.github.kevinah95.norman_the_necromancer.assets.GameSprites
 import io.github.kevinah95.norman_the_necromancer.behaviours.*
 import io.github.kevinah95.norman_the_necromancer.core.*
 import io.github.kevinah95.norman_the_necromancer.entities.createSkeletonLord
@@ -193,12 +194,12 @@ val BleedRitual = object : Ritual(
     TAG_CURSE
 ) {
     override fun onCast(spell: GameObject) {
-        spell.spriteName = "p_red_skull"
+        spell.spriteName = GameSprites.P_RED_SKULL
         spell.emitter?.apply {
             variants = listOf(
-                listOf("p_red_3", "p_red_2", "p_red_1"),
-                listOf("p_red_4", "p_red_3", "p_red_2"),
-                listOf("p_red_3", "p_red_2", "p_red_1")
+                listOf(GameSprites.P_RED_3, GameSprites.P_RED_2, GameSprites.P_RED_1),
+                listOf(GameSprites.P_RED_4, GameSprites.P_RED_3, GameSprites.P_RED_2),
+                listOf(GameSprites.P_RED_3, GameSprites.P_RED_2, GameSprites.P_RED_1)
             )
             frequency = 5.0
             angle = ParticleRange(DEG_180, 0.0)
@@ -239,7 +240,7 @@ val SalvageRitual = object : Ritual(
         for (corpse in corpses) {
             val c = corpse.center()
             val emitter = Fx.bones(c.x, c.y).apply {
-                variants = listOf(listOf("p_green_skull"))
+                variants = listOf(listOf(GameSprites.P_GREEN_SKULL))
                 duration = ParticleRange(100.0, 1000.0)
             }
             emitter.burst(5)
@@ -281,8 +282,8 @@ val ChillyRitual = object : Ritual(
 ) {
     override fun onCast(spell: GameObject) {
         if (randomFloat() <= 0.1) {
-            spell.emitter?.variants = listOf(listOf("p_ice_1", "p_ice_2", "p_ice_3"))
-            spell.spriteName = "p_skull"
+            spell.emitter?.variants = listOf(listOf(GameSprites.P_ICE_1, GameSprites.P_ICE_2, GameSprites.P_ICE_3))
+            spell.spriteName = GameSprites.P_SKULL
             spell.getBehaviour<Damaging>()?.amount = 0
             val freeze = object : Behaviour(spell) {
                 override fun onCollision(target: GameObject) {
