@@ -148,7 +148,7 @@ fun createEnemy(
         this.spriteHeight = spriteHeight
         this.friction = 0.8
         this.mass = 75.0
-        this.x = 400.0
+        this.x = GameLayout.VIRTUAL_WIDTH
         this.tags = Tags.LIVING or Tags.MOBILE
         this.hp = hp
         this.maxHp = hp

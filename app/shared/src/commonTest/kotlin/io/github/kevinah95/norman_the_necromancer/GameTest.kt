@@ -292,5 +292,39 @@ class GameTest {
         val width = renderer.getTextWidth("Había terminado. ¡Gracias por jugar!")
         assertTrue(width > 0.0)
     }
+
+    @Test
+    fun testGameLayoutAndGeometryHelpers() {
+        val rect = Rect2D(10.0, 20.0, 30.0, 40.0)
+        assertEquals(25.0, rect.centerX)
+        assertEquals(40.0, rect.centerY)
+        assertEquals(40.0, rect.right)
+        assertEquals(60.0, rect.bottom)
+
+        val expanded = rect.expanded(5.0)
+        assertEquals(5.0, expanded.x)
+        assertEquals(15.0, expanded.y)
+        assertEquals(40.0, expanded.w)
+        assertEquals(50.0, expanded.h)
+
+        assertTrue(GameLayout.VIRTUAL_WIDTH == 400.0)
+        assertTrue(GameLayout.VIRTUAL_HEIGHT == 200.0)
+        assertTrue(GameLayout.PAUSE_TOUCH_BOUNDS.contains(GameLayout.PAUSE_BUTTON.centerX, GameLayout.PAUSE_BUTTON.centerY))
+        assertTrue(GameLayout.LANG_TOUCH_BOUNDS.contains(GameLayout.LANG_BUTTON.centerX, GameLayout.LANG_BUTTON.centerY))
+    }
+
+    @Test
+    fun testCollisionCheckingMasks() {
+        val player = createPlayer()
+        val enemy = createVillager()
+        val spell = createSpell()
+
+        // Spell has collisionMask = Tags.LIVING, enemy has tags = Tags.LIVING
+        assertTrue(spell.canCollideWith(enemy))
+        // Spell should not collide with itself
+        assertTrue(!spell.canCollideWith(spell))
+        // Player has tags = Tags.PLAYER, spell has collisionMask = Tags.LIVING
+        assertTrue(!spell.canCollideWith(player))
+    }
 }
 

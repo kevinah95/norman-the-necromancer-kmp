@@ -14,7 +14,12 @@ data class Point2D(var x: Double = 0.0, var y: Double = 0.0) {
 }
 
 data class Rect2D(var x: Double = 0.0, var y: Double = 0.0, var w: Double = 0.0, var h: Double = 0.0) {
-    fun contains(px: Double, py: Double): Boolean = px in x..(x + w) && py in y..(y + h)
+    val centerX: Double get() = x + w / 2.0
+    val centerY: Double get() = y + h / 2.0
+    val right: Double get() = x + w
+    val bottom: Double get() = y + h
+
+    fun contains(px: Double, py: Double): Boolean = px in x..right && py in y..bottom
     fun contains(point: Point2D): Boolean = contains(point.x, point.y)
 
     fun overlaps(other: Rect2D): Boolean {
@@ -23,6 +28,13 @@ data class Rect2D(var x: Double = 0.0, var y: Double = 0.0, var w: Double = 0.0,
                 x + w > other.x &&
                 y + h > other.y
     }
+
+    /**
+     * Returns a new [Rect2D] expanded symmetrically by [padding] in all four directions.
+     * Useful for enlarging mobile touch targets without modifying visual boundaries.
+     */
+    fun expanded(padding: Double): Rect2D =
+        Rect2D(x - padding, y - padding, w + padding * 2.0, h + padding * 2.0)
 }
 
 fun clamp(value: Double, min: Double, max: Double): Double =

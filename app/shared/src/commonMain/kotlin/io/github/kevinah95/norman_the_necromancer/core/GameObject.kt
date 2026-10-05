@@ -51,6 +51,13 @@ open class GameObject {
 
     fun isTagged(mask: Int): Boolean = (tags and mask) != 0
 
+    /**
+     * Determines whether this object should evaluate physical collision with [target],
+     * checking that they are distinct entities and that [target]'s tags match our [collisionMask].
+     */
+    fun canCollideWith(target: GameObject): Boolean =
+        this !== target && (collisionMask and target.tags) != 0
+
     fun bounds(): Rect2D = Rect2D(x, y, spriteWidth.toDouble(), spriteHeight.toDouble())
 
     fun center(): Point2D = Point2D(x + spriteWidth / 2.0, y + spriteHeight / 2.0)

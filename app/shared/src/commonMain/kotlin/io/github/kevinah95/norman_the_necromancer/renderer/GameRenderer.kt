@@ -15,7 +15,7 @@ import korlibs.korge.render.RenderContext
 import kotlin.math.roundToInt
 
 class GameRenderer {
-    var sceneOriginY: Double = 150.0
+    var sceneOriginY: Double = GameLayout.SCENE_ORIGIN_Y
 
     fun render(
         batch: BatchBuilder2D,
@@ -58,8 +58,8 @@ class GameRenderer {
     ) {
         val versionText = "v${GameVersion.VERSION_NAME}"
         val textW = getTextWidth(versionText)
-        val x = 400.0 - textW - 4.0
-        val y = 200.0 - GameAtlas.GLYPH_HEIGHT - 3.0
+        val x = GameLayout.VIRTUAL_WIDTH - textW - 4.0
+        val y = GameLayout.VIRTUAL_HEIGHT - GameAtlas.GLYPH_HEIGHT - 3.0
         write(batch, ctx, versionText, x, y, colorMul = Colors.WHITE.withAd(0.30))
     }
 
@@ -204,6 +204,34 @@ class GameRenderer {
         return if (curW > maxW) curW else maxW
     }
 
+    fun writeCenteredHorizontally(
+        batch: BatchBuilder2D,
+        ctx: RenderContext,
+        text: String,
+        y: Double,
+        containerX: Double = 0.0,
+        containerWidth: Double = GameLayout.VIRTUAL_WIDTH,
+        colorMul: RGBA = Colors.WHITE
+    ) {
+        val textW = getTextWidth(text)
+        val textX = containerX + (containerWidth - textW) / 2.0
+        write(batch, ctx, text, textX, y, colorMul)
+    }
+
+    fun drawButton(
+        batch: BatchBuilder2D,
+        ctx: RenderContext,
+        bounds: Rect2D,
+        text: String,
+        frameSprite: String = GameSprites.PINK_FRAME,
+        textOffsetY: Double = 6.0
+    ) {
+        drawNineSlice(batch, ctx, frameSprite, bounds.x, bounds.y, bounds.w, bounds.h)
+        val textW = getTextWidth(text)
+        val textX = bounds.x + (bounds.w - textW) / 2.0
+        write(batch, ctx, text, textX, bounds.y + textOffsetY)
+    }
+
     fun writeCentered(
         batch: BatchBuilder2D,
         ctx: RenderContext,
@@ -215,9 +243,7 @@ class GameRenderer {
         val totalHeight = (lines.size - 1) * lineSpacing + GameAtlas.GLYPH_HEIGHT
         var startY = centerY - totalHeight / 2.0
         for (line in lines) {
-            val width = getTextWidth(line)
-            val startX = (400.0 - width) / 2.0
-            write(batch, ctx, line, startX, startY)
+            writeCenteredHorizontally(batch, ctx, line, startY)
             startY += lineSpacing
         }
     }
@@ -369,30 +395,21 @@ class GameRenderer {
         write(batch, ctx, "${game.level + 1}-10", 305.0, 14.0)
 
         // Pause button (mobile & iOS touch-safe: lower down and clearly clickable)
-        val pauseBtnX = 346.0
-        val pauseBtnY = 8.0
-        val pauseBtnW = 46.0
-        val pauseBtnH = 18.0
-        drawNineSlice(batch, ctx, GameSprites.PINK_FRAME, pauseBtnX, pauseBtnY, pauseBtnW, pauseBtnH)
         val pauseLabel = if (isPaused) io.github.kevinah95.norman_the_necromancer.i18n.GameStrings.hudPlay else io.github.kevinah95.norman_the_necromancer.i18n.GameStrings.hudPause
-        val labelW = getTextWidth(pauseLabel)
-        write(batch, ctx, pauseLabel, pauseBtnX + (pauseBtnW - labelW) / 2.0, pauseBtnY + 6.0)
+        drawButton(batch, ctx, GameLayout.PAUSE_BUTTON, pauseLabel)
 
         // Resurrect Button (Mobile touch-friendly + Desktop: elevated safely above iOS Home Indicator)
         if (game.state == GameState.PLAYING) {
-            val bx = 140.0
-            val by = 158.0
-            val bw = 120.0
-            val bh = 15.0
+            val bounds = GameLayout.RESURRECT_BUTTON
             val progress = clamp(game.ability.timer / game.ability.cooldown, 0.0, 1.0)
-            val fillW = (bw * (1.0 - progress)).toInt()
+            val fillW = (bounds.w * (1.0 - progress)).toInt()
 
-            drawNineSlice(batch, ctx, GameSprites.PINK_FRAME, bx, by, fillW.toDouble(), bh)
-            drawSprite(batch, ctx, GameSprites.SKULL, bx + 2.0, by + 4.0)
+            drawNineSlice(batch, ctx, GameSprites.PINK_FRAME, bounds.x, bounds.y, fillW.toDouble(), bounds.h)
+            drawSprite(batch, ctx, GameSprites.SKULL, bounds.x + 2.0, bounds.y + 4.0)
 
             val ready = progress >= 1.0
             val label = if (ready) io.github.kevinah95.norman_the_necromancer.i18n.GameStrings.hudResurrectReady else io.github.kevinah95.norman_the_necromancer.i18n.GameStrings.hudResurrectCooldown(((1.0 - progress) * game.ability.cooldown / 1000).toInt())
-            write(batch, ctx, label, bx + 12.0, by + 5.0)
+            write(batch, ctx, label, bounds.x + 12.0, bounds.y + 5.0)
         }
     }
 
@@ -400,24 +417,10 @@ class GameRenderer {
         batch: BatchBuilder2D,
         ctx: RenderContext
     ) {
-        val modalW = 160.0
-        val modalH = 68.0
-        val modalX = (400.0 - modalW) / 2.0
-        val modalY = (200.0 - modalH) / 2.0
-
-        val pauseTitle = io.github.kevinah95.norman_the_necromancer.i18n.GameStrings.pauseTitle
-        val titleW = getTextWidth(pauseTitle)
-        drawNineSlice(batch, ctx, GameSprites.PINK_FRAME, modalX, modalY, modalW, modalH)
-        write(batch, ctx, pauseTitle, modalX + (modalW - titleW) / 2.0, modalY + 14.0)
-
-        val btnW = 96.0
-        val btnH = 18.0
-        val btnX = modalX + (modalW - btnW) / 2.0
-        val btnY = modalY + 34.0
-        drawNineSlice(batch, ctx, GameSprites.PINK_FRAME, btnX, btnY, btnW, btnH)
-        val resumeLabel = io.github.kevinah95.norman_the_necromancer.i18n.GameStrings.pauseResume
-        val resumeW = getTextWidth(resumeLabel)
-        write(batch, ctx, resumeLabel, btnX + (btnW - resumeW) / 2.0, btnY + 6.0)
+        val modal = GameLayout.PAUSE_MODAL
+        drawNineSlice(batch, ctx, GameSprites.PINK_FRAME, modal.x, modal.y, modal.w, modal.h)
+        writeCenteredHorizontally(batch, ctx, io.github.kevinah95.norman_the_necromancer.i18n.GameStrings.pauseTitle, modal.y + 14.0, modal.x, modal.w)
+        drawButton(batch, ctx, GameLayout.RESUME_BUTTON, io.github.kevinah95.norman_the_necromancer.i18n.GameStrings.pauseResume)
     }
 
     private fun drawShop(
@@ -426,32 +429,30 @@ class GameRenderer {
         game: Game
     ) {
         val shopTitle = io.github.kevinah95.norman_the_necromancer.i18n.GameStrings.shopTitle
-        val titleW = getTextWidth(shopTitle)
-        write(batch, ctx, shopTitle, (400.0 - titleW) / 2.0, 20.0)
+        writeCenteredHorizontally(batch, ctx, shopTitle, 20.0)
 
         val selected = ShopManager.items.getOrNull(ShopManager.selectedIndex)
 
-        var itemY = 40.0
+        var itemY = GameLayout.SHOP_ITEM_START_Y
         for ((index, item) in ShopManager.items.withIndex()) {
             val isSel = index == ShopManager.selectedIndex
             val prefix = if (isSel) "> " else "  "
             val costStr = if (item.cost > 0) "$${item.cost}" else io.github.kevinah95.norman_the_necromancer.i18n.GameStrings.shopFree
             val itemName = io.github.kevinah95.norman_the_necromancer.i18n.GameStrings.getRitualName(item.name)
             val text = "$prefix$itemName $costStr"
-            write(batch, ctx, text, 100.0, itemY)
-            itemY += 12.0
+            write(batch, ctx, text, GameLayout.SHOP_ITEM_LIST_X, itemY)
+            itemY += GameLayout.SHOP_ITEM_HEIGHT
         }
 
         selected?.let {
             val desc = io.github.kevinah95.norman_the_necromancer.i18n.GameStrings.getRitualDesc(it.name, it.description)
-            write(batch, ctx, "${io.github.kevinah95.norman_the_necromancer.i18n.GameStrings.shopDesc} $desc", 100.0, itemY + 6.0)
+            write(batch, ctx, "${io.github.kevinah95.norman_the_necromancer.i18n.GameStrings.shopDesc} $desc", GameLayout.SHOP_ITEM_LIST_X, itemY + 6.0)
             val actionText = if (it.cost > 0) {
                 if (it.cost <= game.souls) io.github.kevinah95.norman_the_necromancer.i18n.GameStrings.shopTapBuy else io.github.kevinah95.norman_the_necromancer.i18n.GameStrings.shopNeedSouls
             } else {
                 io.github.kevinah95.norman_the_necromancer.i18n.GameStrings.shopNextWave
             }
-            val actionW = getTextWidth(actionText)
-            write(batch, ctx, actionText, (400.0 - actionW) / 2.0, itemY + 20.0)
+            writeCenteredHorizontally(batch, ctx, actionText, itemY + 20.0)
         }
     }
 
@@ -469,29 +470,19 @@ class GameRenderer {
 
             // Draw tap hint below text
             val hintText = if (game.dialogue.size > 1) io.github.kevinah95.norman_the_necromancer.i18n.GameStrings.outroTapContinue else io.github.kevinah95.norman_the_necromancer.i18n.GameStrings.outroTapPlayAgain
-            val hintW = getTextWidth(hintText)
-            write(batch, ctx, hintText, (400.0 - hintW) / 2.0, 116.0)
+            writeCenteredHorizontally(batch, ctx, hintText, 116.0)
         } else {
-            val lineW = getTextWidth(currentText.trim())
-            write(batch, ctx, currentText.trim(), (400.0 - lineW) / 2.0, 70.0)
+            writeCenteredHorizontally(batch, ctx, currentText.trim(), 70.0)
             if (game.state == GameState.INTRO) {
                 val contText = if (game.dialogue.size > 1) {
                     io.github.kevinah95.norman_the_necromancer.i18n.GameStrings.introTapContinue
                 } else {
                     io.github.kevinah95.norman_the_necromancer.i18n.GameStrings.introTapToBegin
                 }
-                val contW = getTextWidth(contText)
-                write(batch, ctx, contText, (400.0 - contW) / 2.0, 95.0)
+                writeCenteredHorizontally(batch, ctx, contText, 95.0)
 
                 // Language toggle button at the top-right of intro screen: [EN]  ES or EN  [ES]
-                val langBtnX = 332.0
-                val langBtnY = 8.0
-                val langBtnW = 60.0
-                val langBtnH = 18.0
-                drawNineSlice(batch, ctx, GameSprites.PINK_FRAME, langBtnX, langBtnY, langBtnW, langBtnH)
-                val langLabel = io.github.kevinah95.norman_the_necromancer.i18n.GameStrings.langButtonText
-                val langW = getTextWidth(langLabel)
-                write(batch, ctx, langLabel, langBtnX + (langBtnW - langW) / 2.0, langBtnY + 6.0)
+                drawButton(batch, ctx, GameLayout.LANG_BUTTON, io.github.kevinah95.norman_the_necromancer.i18n.GameStrings.langButtonText)
             }
         }
     }

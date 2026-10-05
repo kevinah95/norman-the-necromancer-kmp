@@ -35,16 +35,6 @@ class NormanGameScene : Scene() {
     private var dialogueCooldown = 0.0
     private var normanIsBouncing = false
 
-    companion object {
-        // UI Hitbox regions for pointer interactions (matching positions rendered by GameRenderer)
-        private val LANG_BUTTON_BOUNDS = Rect2D(320.0, 5.0, 78.0, 27.0) // Top-right language toggle
-        private val PAUSE_BUTTON_BOUNDS = Rect2D(335.0, 5.0, 63.0, 27.0) // Top-right pause button
-        private val WIN_SHORTCUT_BOUNDS = Rect2D(295.0, 5.0, 40.0, 20.0) // Level indicator debug tap
-        private val RESURRECT_BUTTON_BOUNDS = Rect2D(130.0, 150.0, 140.0, 28.0) // Bottom resurrect action
-        private const val SHOP_ITEM_START_Y = 40.0
-        private const val SHOP_ITEM_HEIGHT = 12.0
-    }
-
     override suspend fun SContainer.sceneMain() {
         GameAtlas.load()
         initGame()
@@ -280,7 +270,7 @@ class NormanGameScene : Scene() {
 
             when (game.state) {
                 GameState.INTRO -> {
-                    if (LANG_BUTTON_BOUNDS.contains(px, py)) {
+                    if (GameLayout.LANG_TOUCH_BOUNDS.contains(px, py)) {
                         toggleLanguage()
                         return@onDown
                     }
@@ -289,16 +279,16 @@ class NormanGameScene : Scene() {
                 GameState.WIN -> advanceOutroOrRestart()
                 GameState.LOSE -> onLose()
                 GameState.PLAYING -> {
-                    if (PAUSE_BUTTON_BOUNDS.contains(px, py)) {
+                    if (GameLayout.PAUSE_TOUCH_BOUNDS.contains(px, py)) {
                         isPaused = true
                         touchAimActive = false
                         return@onDown
                     }
-                    if (WIN_SHORTCUT_BOUNDS.contains(px, py)) {
+                    if (GameLayout.WIN_SHORTCUT_TOUCH_BOUNDS.contains(px, py)) {
                         onWin()
                         return@onDown
                     }
-                    if (RESURRECT_BUTTON_BOUNDS.contains(px, py)) {
+                    if (GameLayout.RESURRECT_TOUCH_BOUNDS.contains(px, py)) {
                         if (game.resurrect()) {
                             GameAudio.playResurrect()
                         }
@@ -311,17 +301,17 @@ class NormanGameScene : Scene() {
                 }
                 GameState.SHOPPING -> {
                     // Item list selection
-                    var itemY = SHOP_ITEM_START_Y
+                    var itemY = GameLayout.SHOP_ITEM_START_Y
                     for (i in ShopManager.items.indices) {
-                        if (py in itemY..(itemY + SHOP_ITEM_HEIGHT) && px in 80.0..320.0) {
+                        if (py in itemY..(itemY + GameLayout.SHOP_ITEM_HEIGHT) && px in GameLayout.SHOP_ITEM_TOUCH_X_MIN..GameLayout.SHOP_ITEM_TOUCH_X_MAX) {
                             ShopManager.selectedIndex = i
                             return@onDown
                         }
-                        itemY += SHOP_ITEM_HEIGHT
+                        itemY += GameLayout.SHOP_ITEM_HEIGHT
                     }
 
                     // Buy action button tap
-                    if (py in (itemY + 15.0)..(itemY + 38.0) && px in 90.0..310.0) {
+                    if (py in (itemY + 15.0)..(itemY + 38.0) && px in GameLayout.SHOP_ACTION_TOUCH_X_MIN..GameLayout.SHOP_ACTION_TOUCH_X_MAX) {
                         if (ShopManager.buyCurrent()) {
                             GameAudio.playBuy()
                         }

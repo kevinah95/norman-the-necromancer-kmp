@@ -13,10 +13,10 @@ enum class GameState {
 }
 
 data class Stage(
-    var width: Double = 400.0,
-    var height: Double = 200.0,
+    var width: Double = GameLayout.VIRTUAL_WIDTH,
+    var height: Double = GameLayout.VIRTUAL_HEIGHT,
     var floor: Double = 0.0,
-    var ceiling: Double = 200.0
+    var ceiling: Double = GameLayout.VIRTUAL_HEIGHT
 )
 
 data class SpellState(
@@ -108,28 +108,27 @@ class Game : GameSession {
         )
     }
 
-    fun onLevelStart() {
+    /**
+     * Dispatches an action across all active rituals.
+     * Takes a snapshot with [toList] to safely allow rituals to attach or detach themselves.
+     */
+    private inline fun dispatchToRituals(action: (Ritual) -> Unit) {
         for (ritual in rituals.toList()) {
-            ritual.onLevelStart()
+            action(ritual)
         }
     }
 
-    fun onLevelEnd() {
-        for (ritual in rituals.toList()) {
-            ritual.onLevelEnd()
-        }
-    }
+    fun onLevelStart() = dispatchToRituals { it.onLevelStart() }
 
-    fun onShopEnter() {
-        for (ritual in rituals.toList()) {
-            ritual.onShopEnter()
-        }
-    }
+    fun onLevelEnd() = dispatchToRituals { it.onLevelEnd() }
+
+    fun onShopEnter() = dispatchToRituals { it.onShopEnter() }
 
     fun onCast(spellObj: GameObject, recursive: Boolean = false) {
-        for (ritual in rituals.toList()) {
-            if (recursive && !ritual.recursive) continue
-            ritual.onCast(spellObj)
+        dispatchToRituals { ritual ->
+            if (!recursive || ritual.recursive) {
+                ritual.onCast(spellObj)
+            }
         }
     }
 
@@ -165,11 +164,7 @@ class Game : GameSession {
         }
     }
 
-    private fun updateRituals(dtMs: Double) {
-        for (ritual in rituals.toList()) {
-            ritual.onFrame(dtMs)
-        }
-    }
+    private fun updateRituals(dtMs: Double) = dispatchToRituals { it.onFrame(dtMs) }
 
     private fun updateObjects(dtMs: Double) {
         for (obj in objects.toList()) {
@@ -179,15 +174,13 @@ class Game : GameSession {
 
     private fun updatePhysics(dtMs: Double) {
         val d = dtMs / 1000.0
+        val currentObjects = objects.toList()
 
-        // Velocities
-        for (obj in objects.toList()) {
+        // Phase 1: Position integration & boundary constraints (floor, ceiling, gravity, bounces)
+        for (obj in currentObjects) {
             obj.x += obj.vx * d
             obj.y += obj.vy * d
-        }
 
-        // Bounces & floor / ceiling collision
-        for (obj in objects.toList()) {
             val lower = stage.floor
             val upper = stage.ceiling - obj.spriteHeight
 
@@ -208,14 +201,11 @@ class Game : GameSession {
             }
         }
 
-        // Collisions
-        val currentObjects = objects.toList()
+        // Phase 2: Inter-object collisions
         for (obj in currentObjects) {
             for (target in currentObjects) {
-                if (obj !== target && (obj.collisionMask and target.tags) != 0) {
-                    if (obj.bounds().overlaps(target.bounds())) {
-                        obj.onCollision(target)
-                    }
+                if (obj.canCollideWith(target) && obj.bounds().overlaps(target.bounds())) {
+                    obj.onCollision(target)
                 }
             }
         }
@@ -237,9 +227,7 @@ class Game : GameSession {
             val center = target.center()
             Fx.bones(center.x, center.y).burst(2 + randomInt(3)).remove()
 
-            for (ritual in rituals.toList()) {
-                ritual.onDeath(death)
-            }
+            dispatchToRituals { it.onDeath(death) }
 
             if (randomFloat() <= target.corpseChance) {
                 val corpse = io.github.kevinah95.norman_the_necromancer.entities.createCorpse()

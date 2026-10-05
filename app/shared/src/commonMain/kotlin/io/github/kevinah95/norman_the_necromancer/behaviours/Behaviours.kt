@@ -45,7 +45,7 @@ class March(gameObject: GameObject, var step: Double) : Behaviour(gameObject) {
         }
 
         val game = gameObject.gameSession as? Game
-        val stageWidth = game?.stage?.width ?: 400.0
+        val stageWidth = game?.stage?.width ?: GameLayout.VIRTUAL_WIDTH
         if ((step < 0 && gameObject.x < 0) || (step > 0 && gameObject.x > stageWidth)) {
             gameObject.gameSession?.despawn(gameObject)
         }
