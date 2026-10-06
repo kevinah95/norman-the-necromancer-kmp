@@ -67,7 +67,7 @@ kotlin {
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
-            api("com.soywiz.korge:korge:6.0.0")
+            api(libs.korge)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
