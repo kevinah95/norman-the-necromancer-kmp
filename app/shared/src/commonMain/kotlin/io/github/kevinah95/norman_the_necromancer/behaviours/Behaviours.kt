@@ -36,7 +36,7 @@ class March(gameObject: GameObject, var step: Double) : Behaviour(gameObject) {
 
         val initialX = gameObject.x
         val targetX = gameObject.x + step
-        TweenManager.tween(initialX, targetX, 200.0) { x, t ->
+        TweenManager.tween(initialX, targetX, 200.0, korlibs.math.interpolation.Easing.SMOOTH) { x, t ->
             gameObject.x = x
             gameObject.hop = sin(t * PI) * 2.0
             if (t == 1.0 && gameObject.mass >= 100.0) {

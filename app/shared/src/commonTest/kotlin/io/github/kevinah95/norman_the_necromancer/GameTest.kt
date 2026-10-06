@@ -326,5 +326,54 @@ class GameTest {
         // Player has tags = Tags.PLAYER, spell has collisionMask = Tags.LIVING
         assertTrue(!spell.canCollideWith(player))
     }
+
+    @Test
+    fun testKorGeInteropAndEasing() {
+        val pt = Point2D(12.0, 34.0)
+        val kPt = pt.toKorGe()
+        assertEquals(12.0, kPt.x)
+        assertEquals(34.0, kPt.y)
+        assertEquals(pt, kPt.toPoint2D())
+
+        val r = Rect2D(10.0, 20.0, 30.0, 40.0)
+        val kR = r.toKorGe()
+        assertEquals(10.0, kR.x)
+        assertEquals(20.0, kR.y)
+        assertEquals(30.0, kR.width)
+        assertEquals(40.0, kR.height)
+        assertEquals(r, kR.toRect2D())
+
+        var progressReceived = 0.0
+        TweenManager.reset()
+        TweenManager.tween(0.0, 100.0, 100.0, korlibs.math.interpolation.Easing.SMOOTH) { _, progress ->
+            progressReceived = progress
+        }
+        TweenManager.update(50.0)
+        assertTrue(progressReceived in 0.0..1.0)
+        TweenManager.reset()
+    }
+
+    @Test
+    fun testSpellUpwardTrajectory() {
+        val player = createPlayer()
+        val game = Game().apply {
+            this.player = player
+            spawn(player)
+            spell.targetAngle = DEG_90 // 90 degrees, straight up!
+            castSpell()
+        }
+        val spell = game.objects.find { it.tags == Tags.SPELL }
+        println("Spell initial: y=${spell?.y}, vy=${spell?.vy}")
+        for (i in 0 until 120) {
+            game.update(16.6)
+            val s = game.objects.find { it.tags == Tags.SPELL }
+            if (s == null) {
+                println("SPELL DESPAWNED AT FRAME $i!")
+                break
+            } else {
+                println("Frame $i: y=${s.y}, vy=${s.vy}")
+            }
+        }
+    }
 }
 

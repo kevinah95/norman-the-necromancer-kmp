@@ -84,7 +84,7 @@ val KnockbackRitual = object : Ritual(
             override fun onCollision(target: GameObject) {
                 if (target.mass < 1000.0) {
                     val initX = target.x
-                    TweenManager.tween(initX, initX + 16.0, 200.0) { x, _ -> target.x = x }
+                    TweenManager.tween(initX, initX + 16.0, 200.0, korlibs.math.interpolation.Easing.SMOOTH) { x, _ -> target.x = x }
                 }
             }
         }

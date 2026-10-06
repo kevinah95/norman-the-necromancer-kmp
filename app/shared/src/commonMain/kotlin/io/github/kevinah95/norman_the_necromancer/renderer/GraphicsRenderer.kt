@@ -4,6 +4,7 @@ import io.github.kevinah95.norman_the_necromancer.assets.GameAtlas
 import io.github.kevinah95.norman_the_necromancer.assets.GameSprites
 import io.github.kevinah95.norman_the_necromancer.core.GameLayout
 import io.github.kevinah95.norman_the_necromancer.core.Rect2D
+import korlibs.image.bitmap.BmpSlice
 import korlibs.image.bitmap.sliceWithSize
 import korlibs.image.color.Colors
 import korlibs.image.color.RGBA
@@ -58,8 +59,23 @@ class GraphicsRenderer(
         drawSprite(batch, ctx, name, screenX, screenY)
     }
 
+    private class NinePatchSlices(
+        val topLeft: BmpSlice,
+        val top: BmpSlice,
+        val topRight: BmpSlice,
+        val left: BmpSlice,
+        val center: BmpSlice,
+        val right: BmpSlice,
+        val bottomLeft: BmpSlice,
+        val bottom: BmpSlice,
+        val bottomRight: BmpSlice
+    )
+
+    private val ninePatchCache = mutableMapOf<String, NinePatchSlices>()
+
     /**
      * Renders a resizable 9-slice framed panel using 3px corner slices.
+     * Caches slices to eliminate GC allocation spikes during runtime rendering.
      */
     fun drawNineSlice(
         batch: BatchBuilder2D,
@@ -75,10 +91,23 @@ class GraphicsRenderer(
         val c = 3
         if (w <= c || h <= c) return
 
-        val sw = rect.w
-        val sh = rect.h
-        val sw1 = (sw - 2 * c).coerceAtLeast(1)
-        val sh1 = (sh - 2 * c).coerceAtLeast(1)
+        val patch = ninePatchCache.getOrPut(name) {
+            val sw = rect.w
+            val sh = rect.h
+            val sw1 = (sw - 2 * c).coerceAtLeast(1)
+            val sh1 = (sh - 2 * c).coerceAtLeast(1)
+            NinePatchSlices(
+                topLeft = bmp.sliceWithSize(rect.x, rect.y, c, c),
+                top = bmp.sliceWithSize(rect.x + c, rect.y, sw1, c),
+                topRight = bmp.sliceWithSize(rect.x + sw - c, rect.y, c, c),
+                left = bmp.sliceWithSize(rect.x, rect.y + c, c, sh1),
+                center = bmp.sliceWithSize(rect.x + c, rect.y + c, sw1, sh1),
+                right = bmp.sliceWithSize(rect.x + sw - c, rect.y + c, c, sh1),
+                bottomLeft = bmp.sliceWithSize(rect.x, rect.y + sh - c, c, c),
+                bottom = bmp.sliceWithSize(rect.x + c, rect.y + sh - c, sw1, c),
+                bottomRight = bmp.sliceWithSize(rect.x + sw - c, rect.y + sh - c, c, c)
+            )
+        }
 
         val dx1 = x
         val dx2 = x + c
@@ -90,30 +119,28 @@ class GraphicsRenderer(
         val dh1 = (dy3 - dy2).coerceAtLeast(0.0)
 
         // Draw corners
-        drawSliceRect(batch, ctx, bmp, rect.x, rect.y, c, c, dx1, dy1, c.toDouble(), c.toDouble())
-        drawSliceRect(batch, ctx, bmp, rect.x + sw - c, rect.y, c, c, dx3, dy1, c.toDouble(), c.toDouble())
-        drawSliceRect(batch, ctx, bmp, rect.x, rect.y + sh - c, c, c, dx1, dy3, c.toDouble(), c.toDouble())
-        drawSliceRect(batch, ctx, bmp, rect.x + sw - c, rect.y + sh - c, c, c, dx3, dy3, c.toDouble(), c.toDouble())
+        drawCachedSlice(batch, ctx, patch.topLeft, dx1, dy1, c.toDouble(), c.toDouble())
+        drawCachedSlice(batch, ctx, patch.topRight, dx3, dy1, c.toDouble(), c.toDouble())
+        drawCachedSlice(batch, ctx, patch.bottomLeft, dx1, dy3, c.toDouble(), c.toDouble())
+        drawCachedSlice(batch, ctx, patch.bottomRight, dx3, dy3, c.toDouble(), c.toDouble())
 
         // Draw edges
-        drawSliceRect(batch, ctx, bmp, rect.x + c, rect.y, sw1, c, dx2, dy1, dw1, c.toDouble())
-        drawSliceRect(batch, ctx, bmp, rect.x + c, rect.y + sh - c, sw1, c, dx2, dy3, dw1, c.toDouble())
-        drawSliceRect(batch, ctx, bmp, rect.x, rect.y + c, c, sh1, dx1, dy2, c.toDouble(), dh1)
-        drawSliceRect(batch, ctx, bmp, rect.x + sw - c, rect.y + c, c, sh1, dx3, dy2, c.toDouble(), dh1)
+        drawCachedSlice(batch, ctx, patch.top, dx2, dy1, dw1, c.toDouble())
+        drawCachedSlice(batch, ctx, patch.bottom, dx2, dy3, dw1, c.toDouble())
+        drawCachedSlice(batch, ctx, patch.left, dx1, dy2, c.toDouble(), dh1)
+        drawCachedSlice(batch, ctx, patch.right, dx3, dy2, c.toDouble(), dh1)
 
         // Draw center
-        drawSliceRect(batch, ctx, bmp, rect.x + c, rect.y + c, sw1, sh1, dx2, dy2, dw1, dh1)
+        drawCachedSlice(batch, ctx, patch.center, dx2, dy2, dw1, dh1)
     }
 
-    private fun drawSliceRect(
+    private fun drawCachedSlice(
         batch: BatchBuilder2D,
         ctx: RenderContext,
-        bmp: korlibs.image.bitmap.Bitmap,
-        sx: Int, sy: Int, sw: Int, sh: Int,
+        slice: BmpSlice,
         dx: Double, dy: Double, dw: Double, dh: Double
     ) {
         if (dw <= 0 || dh <= 0) return
-        val slice = bmp.sliceWithSize(sx, sy, sw, sh)
         val tex = ctx.getTex(slice)
         batch.drawQuad(tex, dx.toFloat(), dy.toFloat(), dw.toFloat(), dh.toFloat(), filtering = false)
     }

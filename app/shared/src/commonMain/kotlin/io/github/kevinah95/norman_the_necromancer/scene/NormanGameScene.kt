@@ -35,8 +35,11 @@ class NormanGameScene : Scene() {
     private var dialogueCooldown = 0.0
     private var normanIsBouncing = false
 
-    override suspend fun SContainer.sceneMain() {
+    override suspend fun SContainer.sceneInit() {
         GameAtlas.load()
+    }
+
+    override suspend fun SContainer.sceneMain() {
         initGame()
         GameAudio.play()
 
@@ -250,10 +253,8 @@ class NormanGameScene : Scene() {
      */
     private fun getPointerPos(evt: korlibs.korge.input.MouseEvents): Point2D {
         val posStage = evt.currentPosStage
-        val posLocal = evt.currentPosLocal
-        val px = if (posStage.x.isFinite()) posStage.x else posLocal.x
-        val py = if (posStage.y.isFinite()) posStage.y else posLocal.y
-        return Point2D(px, py)
+        val p = if (posStage.x.isFinite()) posStage else evt.currentPosLocal
+        return p.toPoint2D()
     }
 
     private fun SContainer.setupInput() {
@@ -382,5 +383,10 @@ class NormanGameScene : Scene() {
         val sceneY = renderer.sceneOriginY - screenY
         val p1 = game.player.center()
         game.spell.targetAngle = atan2(sceneY - p1.y, sceneX - p1.x)
+    }
+
+    override suspend fun sceneDestroy() {
+        TweenManager.reset()
+        super.sceneDestroy()
     }
 }

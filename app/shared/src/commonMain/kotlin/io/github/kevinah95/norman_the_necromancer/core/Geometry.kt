@@ -37,6 +37,13 @@ data class Rect2D(var x: Double = 0.0, var y: Double = 0.0, var w: Double = 0.0,
         Rect2D(x - padding, y - padding, w + padding * 2.0, h + padding * 2.0)
 }
 
+/** Interoperability extensions with KorGE's native Geometry primitives */
+fun Point2D.toKorGe(): korlibs.math.geom.Point = korlibs.math.geom.Point(x, y)
+fun korlibs.math.geom.Point.toPoint2D(): Point2D = Point2D(x, y)
+
+fun Rect2D.toKorGe(): korlibs.math.geom.Rectangle = korlibs.math.geom.Rectangle(x, y, w, h)
+fun korlibs.math.geom.Rectangle.toRect2D(): Rect2D = Rect2D(x, y, width, height)
+
 fun clamp(value: Double, min: Double, max: Double): Double =
     if (value < min) min else if (value > max) max else value
 
