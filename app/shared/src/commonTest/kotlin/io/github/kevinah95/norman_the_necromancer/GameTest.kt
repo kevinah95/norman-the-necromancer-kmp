@@ -363,17 +363,43 @@ class GameTest {
             castSpell()
         }
         val spell = game.objects.find { it.tags == Tags.SPELL }
-        println("Spell initial: y=${spell?.y}, vy=${spell?.vy}")
         for (i in 0 until 120) {
             game.update(16.6)
-            val s = game.objects.find { it.tags == Tags.SPELL }
-            if (s == null) {
-                println("SPELL DESPAWNED AT FRAME $i!")
-                break
-            } else {
-                println("Frame $i: y=${s.y}, vy=${s.vy}")
-            }
         }
     }
+
+    @Test
+    fun testRitualsLocalizationAndKeys() {
+        val allRituals = io.github.kevinah95.norman_the_necromancer.rituals.getAllShopRituals()
+        assertEquals(20, allRituals.size)
+
+        // Verify English localization
+        io.github.kevinah95.norman_the_necromancer.i18n.GameStrings.language = io.github.kevinah95.norman_the_necromancer.i18n.GameLanguage.EN
+        val bouncingEn = io.github.kevinah95.norman_the_necromancer.rituals.BouncingRitual
+        assertEquals("Bouncing", bouncingEn.name)
+        assertEquals("Spells bounce", bouncingEn.description)
+
+        for (ritual in allRituals) {
+            assertTrue(ritual.key.isNotBlank(), "Ritual key should not be blank")
+            assertTrue(ritual.name.isNotBlank(), "Ritual ${ritual.key} English name should not be blank")
+            assertTrue(ritual.description.isNotBlank(), "Ritual ${ritual.key} English description should not be blank")
+        }
+
+        // Verify Spanish localization dynamic update
+        io.github.kevinah95.norman_the_necromancer.i18n.GameStrings.language = io.github.kevinah95.norman_the_necromancer.i18n.GameLanguage.ES
+        val bouncingEs = io.github.kevinah95.norman_the_necromancer.rituals.BouncingRitual
+        assertEquals("Rebote", bouncingEs.name)
+        assertEquals("Los hechizos rebotan", bouncingEs.description)
+
+        for (ritual in allRituals) {
+            assertTrue(ritual.name.isNotBlank(), "Ritual ${ritual.key} Spanish name should not be blank")
+            assertTrue(ritual.description.isNotBlank(), "Ritual ${ritual.key} Spanish description should not be blank")
+        }
+
+        // Reset to default
+        io.github.kevinah95.norman_the_necromancer.i18n.GameStrings.language = io.github.kevinah95.norman_the_necromancer.i18n.GameLanguage.EN
+    }
 }
+
+
 

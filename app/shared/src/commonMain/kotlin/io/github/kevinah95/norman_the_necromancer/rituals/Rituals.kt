@@ -7,29 +7,48 @@ import io.github.kevinah95.norman_the_necromancer.entities.createSkeletonLord
 import io.github.kevinah95.norman_the_necromancer.entities.createSpell
 import io.github.kevinah95.norman_the_necromancer.fx.Fx
 import io.github.kevinah95.norman_the_necromancer.fx.ParticleRange
+import io.github.kevinah95.norman_the_necromancer.i18n.RitualKeys
 import io.github.kevinah95.norman_the_necromancer.shop.ShopManager
+import korlibs.math.interpolation.Easing
 
+/**
+ * Bitmask tags used for ritual categorization, dependencies, and exclusions.
+ */
+object RitualTags {
+    const val NONE: Int = 0
+    const val BOUNCING: Int = 1 shl 0
+    const val SPLITTING: Int = 1 shl 1
+    const val EXPLOSIVE: Int = 1 shl 2
+    const val HOMING: Int = 1 shl 3
+    const val WARDSTONES: Int = 1 shl 4
+    const val CASTING_RATE: Int = 1 shl 5
+    const val CURSE: Int = 1 shl 6
+}
 
-// Ritual tags bitmasks
-const val TAG_NONE: Int = 0
-const val TAG_BOUNCING: Int = 1 shl 0
-const val TAG_SPLITTING: Int = 1 shl 1
-const val TAG_EXPLOSIVE: Int = 1 shl 2
-const val TAG_HOMING: Int = 1 shl 3
-const val TAG_WARDSTONES: Int = 1 shl 4
-const val TAG_CASTING_RATE: Int = 1 shl 5
-const val TAG_CURSE: Int = 1 shl 6
+// Backwards-compatible top-level constants
+const val TAG_NONE: Int = RitualTags.NONE
+const val TAG_BOUNCING: Int = RitualTags.BOUNCING
+const val TAG_SPLITTING: Int = RitualTags.SPLITTING
+const val TAG_EXPLOSIVE: Int = RitualTags.EXPLOSIVE
+const val TAG_HOMING: Int = RitualTags.HOMING
+const val TAG_WARDSTONES: Int = RitualTags.WARDSTONES
+const val TAG_CASTING_RATE: Int = RitualTags.CASTING_RATE
+const val TAG_CURSE: Int = RitualTags.CURSE
 
-val StreakRitual = object : Ritual("Streak", "", TAG_NONE) {
+// --- Concrete Ritual Singletons ---
+
+object StreakRitual : Ritual(
+    key = RitualKeys.STREAK,
+    tags = RitualTags.NONE
+) {
     override fun onCast(spell: GameObject) {
         spell.addBehaviour(HitStreak(spell))
     }
 }
 
-val BouncingRitual = object : Ritual(
-    "Bouncing",
-    "Spells bounce",
-    TAG_BOUNCING
+object BouncingRitual : Ritual(
+    key = RitualKeys.BOUNCING,
+    tags = RitualTags.BOUNCING
 ) {
     override fun onCast(spell: GameObject) {
         spell.addBehaviour(DespawnTimer(spell, 3000.0))
@@ -38,23 +57,20 @@ val BouncingRitual = object : Ritual(
     }
 }
 
-val DoubleshotRitual = object : Ritual(
-    "Doubleshot",
-    "Cast 2 spells",
-    TAG_SPLITTING,
-    exclusiveTags = TAG_SPLITTING,
+object DoubleshotRitual : Ritual(
+    key = RitualKeys.DOUBLESHOT,
+    tags = RitualTags.SPLITTING,
+    exclusiveTags = RitualTags.SPLITTING,
     rarity = Rarity.RARE
 ) {
     override fun onActive() {
-        val game = game ?: return
-        game.spell.shotsPerRound = 2
+        resolveGame()?.spell?.shotsPerRound = 2
     }
 }
 
-val HunterRitual = object : Ritual(
-    "Hunter",
-    "Spells seek targets",
-    TAG_HOMING,
+object HunterRitual : Ritual(
+    key = RitualKeys.HUNTER,
+    tags = RitualTags.HOMING,
     rarity = Rarity.RARE
 ) {
     override fun onCast(spell: GameObject) {
@@ -62,10 +78,9 @@ val HunterRitual = object : Ritual(
     }
 }
 
-val WeightlessRitual = object : Ritual(
-    "Weightless",
-    "Spells are not affected by gravity",
-    TAG_NONE
+object WeightlessRitual : Ritual(
+    key = RitualKeys.WEIGHTLESS,
+    tags = RitualTags.NONE
 ) {
     override fun onCast(spell: GameObject) {
         spell.mass = 0.0
@@ -74,17 +89,16 @@ val WeightlessRitual = object : Ritual(
     }
 }
 
-val KnockbackRitual = object : Ritual(
-    "Knockback",
-    "Spells knock backwards",
-    TAG_NONE
+object KnockbackRitual : Ritual(
+    key = RitualKeys.KNOCKBACK,
+    tags = RitualTags.NONE
 ) {
     override fun onCast(spell: GameObject) {
         val b = object : Behaviour(spell) {
             override fun onCollision(target: GameObject) {
                 if (target.mass < 1000.0) {
                     val initX = target.x
-                    TweenManager.tween(initX, initX + 16.0, 200.0, korlibs.math.interpolation.Easing.SMOOTH) { x, _ -> target.x = x }
+                    TweenManager.tween(initX, initX + 16.0, 200.0, Easing.SMOOTH) { x, _ -> target.x = x }
                 }
             }
         }
@@ -92,23 +106,20 @@ val KnockbackRitual = object : Ritual(
     }
 }
 
-val CeilingRitual = object : Ritual(
-    "Ceiling",
-    "Adds a ceiling",
-    TAG_NONE,
-    requiredTags = TAG_BOUNCING
+object CeilingRitual : Ritual(
+    key = RitualKeys.CEILING,
+    tags = RitualTags.NONE,
+    requiredTags = RitualTags.BOUNCING
 ) {
     override fun onActive() {
-        val game = game ?: return
-        game.stage.ceiling = 48.0
+        resolveGame()?.stage?.ceiling = 48.0
     }
 }
 
-val RainRitual = object : Ritual(
-    "Rain",
-    "Spells split when they drop",
-    TAG_SPLITTING,
-    exclusiveTags = TAG_SPLITTING,
+object RainRitual : Ritual(
+    key = RitualKeys.RAIN,
+    tags = RitualTags.SPLITTING,
+    exclusiveTags = RitualTags.SPLITTING,
     recursive = false,
     rarity = Rarity.RARE
 ) {
@@ -118,7 +129,7 @@ val RainRitual = object : Ritual(
             override fun onFrame(dt: Double) {
                 if (!split && gameObject.vy < 0.0) {
                     split = true
-                    val game = gameObject.gameSession as? Game ?: return
+                    val game = resolveGame(gameObject) ?: return
                     val p1 = createSpell()
                     val p2 = createSpell()
                     p1.x = gameObject.x
@@ -142,10 +153,9 @@ val RainRitual = object : Ritual(
     }
 }
 
-val DrunkardRitual = object : Ritual(
-    "Drunkard",
-    "2x damage, wobbly aim",
-    TAG_NONE
+object DrunkardRitual : Ritual(
+    key = RitualKeys.DRUNKARD,
+    tags = RitualTags.NONE
 ) {
     override fun onCast(spell: GameObject) {
         spell.vx += (randomInt(100) - 50).toDouble()
@@ -154,44 +164,39 @@ val DrunkardRitual = object : Ritual(
     }
 }
 
-val SeerRitual = object : Ritual(
-    "Seer",
-    "Spells pass through the dead",
-    TAG_NONE
+object SeerRitual : Ritual(
+    key = RitualKeys.SEER,
+    tags = RitualTags.NONE
 ) {
     override fun onCast(spell: GameObject) {
         spell.collisionMask = Tags.LIVING
     }
 }
 
-val TearstoneRitual = object : Ritual(
-    "Tearstone",
-    "3x damage when < half HP",
-    TAG_NONE
+object TearstoneRitual : Ritual(
+    key = RitualKeys.TEARSTONE,
+    tags = RitualTags.NONE
 ) {
     override fun onCast(spell: GameObject) {
-        val game = gameObjectSession(spell) ?: return
+        val game = resolveGame(spell) ?: return
         if (game.player.hp < game.player.maxHp / 2.0) {
             spell.getBehaviour<Damaging>()?.let { it.amount *= 3 }
         }
     }
 }
 
-val ImpatienceRitual = object : Ritual(
-    "Impatience",
-    "Resurrection recharges 2x faster",
-    TAG_NONE
+object ImpatienceRitual : Ritual(
+    key = RitualKeys.IMPATIENCE,
+    tags = RitualTags.NONE
 ) {
     override fun onActive() {
-        val game = game ?: return
-        game.ability.cooldown /= 2.0
+        resolveGame()?.ability?.let { it.cooldown /= 2.0 }
     }
 }
 
-val BleedRitual = object : Ritual(
-    "Bleed",
-    "Inflicts bleed on hits",
-    TAG_CURSE
+object BleedRitual : Ritual(
+    key = RitualKeys.BLEED,
+    tags = RitualTags.CURSE
 ) {
     override fun onCast(spell: GameObject) {
         spell.spriteName = GameSprites.P_RED_SKULL
@@ -214,13 +219,12 @@ val BleedRitual = object : Ritual(
     }
 }
 
-val AllegianceRitual = object : Ritual(
-    "Allegiance",
-    "Summon your honour guard after resurrections",
-    TAG_NONE
+object AllegianceRitual : Ritual(
+    key = RitualKeys.ALLEGIANCE,
+    tags = RitualTags.NONE
 ) {
     override fun onResurrect() {
-        val game = game ?: return
+        val game = resolveGame() ?: return
         for (i in 0 until 3) {
             val unit = createSkeletonLord()
             unit.updateSpeed = 200.0
@@ -229,13 +233,12 @@ val AllegianceRitual = object : Ritual(
     }
 }
 
-val SalvageRitual = object : Ritual(
-    "Salvage",
-    "Corpses become souls at end of level",
-    TAG_NONE
+object SalvageRitual : Ritual(
+    key = RitualKeys.SALVAGE,
+    tags = RitualTags.NONE
 ) {
     override fun onLevelEnd() {
-        val game = game ?: return
+        val game = resolveGame() ?: return
         val corpses = game.objects.filter { it.isTagged(Tags.CORPSE) }
         for (corpse in corpses) {
             val c = corpse.center()
@@ -251,23 +254,21 @@ val SalvageRitual = object : Ritual(
     }
 }
 
-val StudiousRitual = object : Ritual(
-    "Studious",
-    "Rituals are 50% cheaper",
-    TAG_NONE,
+object StudiousRitual : Ritual(
+    key = RitualKeys.STUDIOUS,
+    tags = RitualTags.NONE,
     rarity = Rarity.RARE
 ) {
     override fun onShopEnter() {
         for (item in ShopManager.items) {
-            item.cost = item.cost / 2
+            item.cost /= 2
         }
     }
 }
 
-val ElectrodynamicsRitual = object : Ritual(
-    "Electrodynamics",
-    "Lightning strikes after hits",
-    TAG_NONE,
+object ElectrodynamicsRitual : Ritual(
+    key = RitualKeys.ELECTRODYNAMICS,
+    tags = RitualTags.NONE,
     rarity = Rarity.RARE
 ) {
     override fun onCast(spell: GameObject) {
@@ -275,10 +276,9 @@ val ElectrodynamicsRitual = object : Ritual(
     }
 }
 
-val ChillyRitual = object : Ritual(
-    "Chilly",
-    "10% chance to freeze enemies",
-    TAG_NONE
+object ChillyRitual : Ritual(
+    key = RitualKeys.CHILLY,
+    tags = RitualTags.NONE
 ) {
     override fun onCast(spell: GameObject) {
         if (randomFloat() <= 0.1) {
@@ -297,14 +297,13 @@ val ChillyRitual = object : Ritual(
     }
 }
 
-val GiantsRitual = object : Ritual(
-    "Giants",
-    "20% chance to resurrect giant skeletons",
-    TAG_NONE
+object GiantsRitual : Ritual(
+    key = RitualKeys.GIANTS,
+    tags = RitualTags.NONE
 ) {
     override fun onResurrection(gameObject: GameObject) {
         if (randomFloat() < 0.2) {
-            val game = (game ?: gameObjectSession(gameObject)) ?: return
+            val game = resolveGame(gameObject) ?: return
             val x = gameObject.x
             val y = gameObject.y
             game.despawn(gameObject)
@@ -313,20 +312,18 @@ val GiantsRitual = object : Ritual(
     }
 }
 
-val AvariceRitual = object : Ritual(
-    "Avarice",
-    "+1 soul for each corpse you resurrect",
-    TAG_NONE
+object AvariceRitual : Ritual(
+    key = RitualKeys.AVARICE,
+    tags = RitualTags.NONE
 ) {
     override fun onResurrection(gameObject: GameObject) {
-        (game ?: gameObjectSession(gameObject))?.addSouls(1)
+        resolveGame(gameObject)?.addSouls(1)
     }
 }
 
-val HardenedRitual = object : Ritual(
-    "Hardened",
-    "Undead have +1 HP",
-    TAG_NONE
+object HardenedRitual : Ritual(
+    key = RitualKeys.HARDENED,
+    tags = RitualTags.NONE
 ) {
     override fun onResurrection(gameObject: GameObject) {
         gameObject.maxHp += 1
@@ -334,8 +331,9 @@ val HardenedRitual = object : Ritual(
     }
 }
 
-private fun gameObjectSession(obj: GameObject): Game? = obj.gameSession as? Game
-
+/**
+ * Returns the complete list of rituals available in the inter-wave shop.
+ */
 fun getAllShopRituals(): List<Ritual> = listOf(
     BouncingRitual,
     CeilingRitual,

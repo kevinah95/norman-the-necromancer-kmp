@@ -107,6 +107,37 @@ object GameStrings {
     val langButtonText: String
         get() = if (isSpanish) " EN  [ES]" else "[EN]  ES "
 
+    private val ritualDescriptionsEn = mapOf(
+        // Core Shop Items
+        "Heal" to "Heal 1 HP",
+        "Renew" to "+1 Max HP",
+        "Recharge" to "+1 Max Cast",
+        "Continue" to "Begin next level",
+
+        // Rituals
+        "Streak" to "Increases reward for consecutive hits",
+        "Bouncing" to "Spells bounce",
+        "Doubleshot" to "Cast 2 spells",
+        "Hunter" to "Spells seek targets",
+        "Weightless" to "Spells are not affected by gravity",
+        "Knockback" to "Spells knock backwards",
+        "Ceiling" to "Adds a ceiling",
+        "Rain" to "Spells split when they drop",
+        "Drunkard" to "2x damage, wobbly aim",
+        "Seer" to "Spells pass through the dead",
+        "Tearstone" to "3x damage when < half HP",
+        "Impatience" to "Resurrection recharges 2x faster",
+        "Bleed" to "Inflicts bleed on hits",
+        "Allegiance" to "Summon your honour guard after resurrections",
+        "Salvage" to "Corpses become souls at end of level",
+        "Studious" to "Rituals are 50% cheaper",
+        "Electrodynamics" to "Lightning strikes after hits",
+        "Chilly" to "10% chance to freeze enemies",
+        "Giants" to "20% chance to resurrect giant skeletons",
+        "Avarice" to "+1 soul for each corpse you resurrect",
+        "Hardened" to "Undead have +1 HP"
+    )
+
     private val ritualTranslationsEs = mapOf(
         // Core Shop Items
         "Heal" to ("Curar" to "Recupera 1 de Vida"),
@@ -143,8 +174,37 @@ object GameStrings {
         return ritualTranslationsEs[englishName]?.first ?: englishName
     }
 
-    fun getRitualDesc(englishName: String, fallbackDesc: String): String {
-        if (!isSpanish) return fallbackDesc
-        return ritualTranslationsEs[englishName]?.second ?: fallbackDesc
+    fun getRitualDesc(englishName: String, fallbackDesc: String = ""): String {
+        if (!isSpanish) return ritualDescriptionsEn[englishName] ?: fallbackDesc
+        return ritualTranslationsEs[englishName]?.second ?: (ritualDescriptionsEn[englishName] ?: fallbackDesc)
     }
 }
+
+/**
+ * Type-safe constants for all ritual identifiers in the game.
+ * Eliminates hardcoded string literals across rituals, shop items, and tests.
+ */
+object RitualKeys {
+    const val STREAK = "Streak"
+    const val BOUNCING = "Bouncing"
+    const val DOUBLESHOT = "Doubleshot"
+    const val HUNTER = "Hunter"
+    const val WEIGHTLESS = "Weightless"
+    const val KNOCKBACK = "Knockback"
+    const val CEILING = "Ceiling"
+    const val RAIN = "Rain"
+    const val DRUNKARD = "Drunkard"
+    const val SEER = "Seer"
+    const val TEARSTONE = "Tearstone"
+    const val IMPATIENCE = "Impatience"
+    const val BLEED = "Bleed"
+    const val ALLEGIANCE = "Allegiance"
+    const val SALVAGE = "Salvage"
+    const val STUDIOUS = "Studious"
+    const val ELECTRODYNAMICS = "Electrodynamics"
+    const val CHILLY = "Chilly"
+    const val GIANTS = "Giants"
+    const val AVARICE = "Avarice"
+    const val HARDENED = "Hardened"
+}
+

@@ -5,12 +5,41 @@ import io.github.kevinah95.norman_the_necromancer.levels.LevelManager
 import io.github.kevinah95.norman_the_necromancer.rituals.getAllShopRituals
 import kotlin.math.pow
 
+object ShopKeys {
+    const val HEAL = "Heal"
+    const val RENEW = "Renew"
+    const val RECHARGE = "Recharge"
+    const val CONTINUE = "Continue"
+}
+
 data class ShopItem(
     var cost: Int,
-    val name: String,
-    val description: String,
-    val onPurchase: () -> Unit
-)
+    val key: String,
+    val onPurchase: () -> Unit,
+    val customName: String? = null,
+    val customDescription: String? = null
+) {
+    val name: String
+        get() = customName ?: io.github.kevinah95.norman_the_necromancer.i18n.GameStrings.getRitualName(key)
+
+    val description: String
+        get() = customDescription ?: io.github.kevinah95.norman_the_necromancer.i18n.GameStrings.getRitualDesc(key)
+
+    /** Secondary constructor for backwards compatibility */
+    constructor(
+        cost: Int,
+        name: String,
+        description: String,
+        onPurchase: () -> Unit
+    ) : this(
+        cost = cost,
+        key = name,
+        onPurchase = onPurchase,
+        customName = name,
+        customDescription = description
+    )
+}
+
 
 object ShopManager {
     var currentGame: Game? = null
@@ -72,34 +101,32 @@ object ShopManager {
             items.add(
                 ShopItem(
                     cost = 10 * (game.level + 1),
-                    name = "Heal",
-                    description = "Heal 1 HP"
-                ) {
-                    game.damage(game.player, -1)
-                }
+                    key = ShopKeys.HEAL,
+                    onPurchase = { game.damage(game.player, -1) }
+                )
             )
         }
 
         items.add(
             ShopItem(
                 cost = 10 * exp,
-                name = "Renew",
-                description = "+1 Max HP"
-            ) {
-                game.player.maxHp++
-                game.player.hp++
-            }
+                key = ShopKeys.RENEW,
+                onPurchase = {
+                    game.player.maxHp++
+                    game.player.hp++
+                }
+            )
         )
 
         items.add(
             ShopItem(
                 cost = 10 * exp,
-                name = "Recharge",
-                description = "+1 Max Cast"
-            ) {
-                game.spell.maxCasts++
-                game.spell.casts++
-            }
+                key = ShopKeys.RECHARGE,
+                onPurchase = {
+                    game.spell.maxCasts++
+                    game.spell.casts++
+                }
+            )
         )
 
         // Add ritual items
@@ -113,12 +140,12 @@ object ShopManager {
             items.add(
                 ShopItem(
                     cost = cost,
-                    name = ritual.name,
-                    description = ritual.description
-                ) {
-                    availableRituals.remove(ritual)
-                    game.addRitual(ritual)
-                }
+                    key = ritual.key,
+                    onPurchase = {
+                        availableRituals.remove(ritual)
+                        game.addRitual(ritual)
+                    }
+                )
             )
         }
 
@@ -126,13 +153,12 @@ object ShopManager {
         items.add(
             ShopItem(
                 cost = 0,
-                name = "Continue",
-                description = "Begin next wave"
-            ) {
-                exitShop()
-            }
+                key = ShopKeys.CONTINUE,
+                onPurchase = { exitShop() }
+            )
         )
 
         selectedIndex = 0
     }
 }
+
