@@ -1,11 +1,20 @@
 package io.github.kevinah95.norman_the_necromancer.entities
 
 import io.github.kevinah95.norman_the_necromancer.assets.GameSprites
+import io.github.kevinah95.norman_the_necromancer.audio.GameAudio
 import io.github.kevinah95.norman_the_necromancer.behaviours.*
 import io.github.kevinah95.norman_the_necromancer.core.*
 import io.github.kevinah95.norman_the_necromancer.fx.Fx
 import io.github.kevinah95.norman_the_necromancer.fx.ParticleRange
 
+/**
+ * Factory functions for creating all game entities.
+ * Entities are [GameObject] instances configured with physics, tags, sprites, and [Behaviour]s.
+ */
+
+/**
+ * Creates a corpse item left on the ground, used as resource for necromancy rituals.
+ */
 fun createCorpse(): GameObject {
     return GameObject().apply {
         spriteName = GameSprites.SKULL
@@ -16,6 +25,10 @@ fun createCorpse(): GameObject {
     }
 }
 
+/**
+ * Creates Norman, the playable necromancer.
+ * Collides with living enemies and triggers game over on death.
+ */
 fun createPlayer(): GameObject {
     val player = GameObject().apply {
         x = 5.0
@@ -43,6 +56,9 @@ fun createPlayer(): GameObject {
     return player
 }
 
+/**
+ * Creates the base spell projectile with damaging behaviour and despawn flags.
+ */
 fun createSpell(): GameObject {
     val obj = GameObject().apply {
         spriteName = GameSprites.P_GREEN_SKULL
@@ -60,6 +76,9 @@ fun createSpell(): GameObject {
     return obj
 }
 
+/**
+ * Creates a red spell projectile that applies the [Bleeding] behaviour on hit.
+ */
 fun createBleedSpell(): GameObject {
     val spell = createSpell().apply {
         spriteName = GameSprites.P_RED_SKULL
@@ -83,6 +102,9 @@ fun createBleedSpell(): GameObject {
     return spell
 }
 
+/**
+ * Creates a lightning spell projectile with randomized electric particle trail.
+ */
 fun createLightningSpell(): GameObject {
     val spell = createSpell().apply {
         spriteName = GameSprites.P_SKULL_YELLOW
@@ -100,6 +122,9 @@ fun createLightningSpell(): GameObject {
     return spell
 }
 
+/**
+ * Creates a standard skeleton minion that marches forward (right) and attacks living targets.
+ */
 fun createSkeleton(): GameObject {
     val unit = GameObject().apply {
         spriteName = GameSprites.SKELETON
@@ -116,6 +141,9 @@ fun createSkeleton(): GameObject {
     return unit
 }
 
+/**
+ * Creates a stronger skeleton with increased health and a larger sprite.
+ */
 fun createSkeletonLord(): GameObject {
     val unit = createSkeleton().apply {
         spriteName = GameSprites.BIG_SKELETON
@@ -129,8 +157,8 @@ fun createSkeletonLord(): GameObject {
 }
 
 /**
- * Base factory for hostile mobile units that march left towards Norman.
- * Centralizes standard physics, collision tags, and march behaviour.
+ * Base factory for hostile units marching left towards Norman.
+ * Centralizes standard physics, tags, health, and march behaviour.
  */
 fun createEnemy(
     spriteName: String,
@@ -160,6 +188,9 @@ fun createEnemy(
     return unit
 }
 
+/**
+ * Creates a basic villager with a randomly chosen appearance.
+ */
 fun createVillager(): GameObject {
     val variants = listOf(GameSprites.VILLAGER_1, GameSprites.VILLAGER_2, GameSprites.VILLAGER_3, GameSprites.VILLAGER_4)
     val selectedSprite = variants.randomElement()
@@ -180,6 +211,9 @@ fun createVillager(): GameObject {
     )
 }
 
+/**
+ * Creates a tougher villager variant with 2 HP.
+ */
 fun createBandit(): GameObject {
     return createVillager().apply {
         hp = 2
@@ -187,6 +221,9 @@ fun createBandit(): GameObject {
     }
 }
 
+/**
+ * Creates a fast-moving archer enemy with 2 HP.
+ */
 fun createArcher(): GameObject = createEnemy(
     spriteName = GameSprites.ARCHER,
     spriteWidth = 13,
@@ -195,6 +232,9 @@ fun createArcher(): GameObject = createEnemy(
     updateSpeed = 300.0
 )
 
+/**
+ * Creates a monk that periodically heals nearby living allies every 5 turns.
+ */
 fun createMonk(): GameObject {
     val unit = createEnemy(
         spriteName = GameSprites.MONK,
@@ -221,6 +261,9 @@ fun createMonk(): GameObject {
     return unit
 }
 
+/**
+ * Creates a heavy tank enemy with 10 HP and high soul reward.
+ */
 fun createChampion(): GameObject = createEnemy(
     spriteName = GameSprites.CHAMPION,
     spriteWidth = 22,
@@ -230,6 +273,9 @@ fun createChampion(): GameObject = createEnemy(
     updateSpeed = 1000.0
 )
 
+/**
+ * Creates a knight that periodically retreats into an impenetrable shell.
+ */
 fun createShellKnight(): GameObject {
     val unit = createEnemy(
         spriteName = GameSprites.SHELL_KNIGHT_UP,
@@ -262,6 +308,22 @@ fun createShellKnight(): GameObject {
     return unit
 }
 
+/**
+ * Creates a fast swarm rat summoned by the Piper. Does not leave a corpse.
+ */
+fun createRat(): GameObject = createEnemy(
+    spriteName = GameSprites.RAT,
+    spriteWidth = 20,
+    spriteHeight = 6,
+    hp = 1,
+    souls = 5,
+    updateSpeed = 200.0,
+    corpseChance = 0.0
+)
+
+/**
+ * Creates a piper that periodically summons rats.
+ */
 fun createPiper(): GameObject {
     val unit = createEnemy(
         spriteName = GameSprites.PIPER,
@@ -275,16 +337,9 @@ fun createPiper(): GameObject {
     return unit
 }
 
-fun createRat(): GameObject = createEnemy(
-    spriteName = GameSprites.RAT,
-    spriteWidth = 20,
-    spriteHeight = 6,
-    hp = 1,
-    souls = 5,
-    updateSpeed = 200.0,
-    corpseChance = 0.0
-)
-
+/**
+ * Creates a knight that periodically enters an enraged state, reflecting incoming spells.
+ */
 fun createRageKnight(): GameObject {
     val unit = createEnemy(
         spriteName = GameSprites.RAGE_KNIGHT,
@@ -324,6 +379,9 @@ fun createRageKnight(): GameObject {
     return unit
 }
 
+/**
+ * Creates the deflected projectile orb retaliated by the Royal Guard.
+ */
 fun createRoyalGuardOrb(): GameObject {
     val orb = GameObject().apply {
         spriteName = GameSprites.YELLOW_ORB
@@ -342,6 +400,9 @@ fun createRoyalGuardOrb(): GameObject {
     return orb
 }
 
+/**
+ * Creates an elite guard that periodically raises a shield to parry spells and counter-attack.
+ */
 fun createRoyalGuard(): GameObject {
     val unit = createEnemy(
         spriteName = GameSprites.ROYAL_GUARD,
@@ -379,24 +440,14 @@ fun createRoyalGuard(): GameObject {
         }
     }
 
-    unit.behaviours.reverse() // Shield added first so it comes up first
+    unit.behaviours.reverse() // Shield added first so it processes before other behaviours
     unit.addBehaviour(shield, 0)
     return unit
 }
 
-fun createWizard(): GameObject {
-    val unit = createEnemy(
-        spriteName = GameSprites.WIZARD,
-        spriteWidth = 14,
-        spriteHeight = 17,
-        hp = 15,
-        souls = 10,
-        updateSpeed = 500.0
-    )
-    unit.addBehaviour(Summon(unit, ::createPortal, 3000.0))
-    return unit
-}
-
+/**
+ * Creates a temporary stationary portal that spawns reinforcements every 3 seconds.
+ */
 fun createPortal(): GameObject {
     val unit = GameObject().apply {
         spriteName = GameSprites.PORTAL
@@ -419,6 +470,29 @@ fun createPortal(): GameObject {
     return unit
 }
 
+/**
+ * Creates a wizard enemy that conjures summoning portals.
+ */
+fun createWizard(): GameObject {
+    val unit = createEnemy(
+        spriteName = GameSprites.WIZARD,
+        spriteWidth = 14,
+        spriteHeight = 17,
+        hp = 15,
+        souls = 10,
+        updateSpeed = 500.0
+    )
+    unit.addBehaviour(Summon(unit, ::createPortal, 3000.0))
+    return unit
+}
+
+/**
+ * Creates the final boss (The King) featuring a 4-phase state machine:
+ * - Phase 1: Advances on horseback.
+ * - Phase 2: Retreats invulnerable while summoning Royal Guards.
+ * - Phase 3: Vulnerable again after 5 guards are summoned.
+ * - Phase 4: Dismounts on foot with full HP and triggers a rain of corpses.
+ */
 fun createTheKing(): GameObject {
     val unit = createEnemy(
         spriteName = GameSprites.THE_KING,
@@ -455,7 +529,7 @@ fun createTheKing(): GameObject {
                 marching.step *= -1.0
             } else if (phase == 3 && willDie) {
                 phase = 4
-                io.github.kevinah95.norman_the_necromancer.audio.GameAudio.onKingPhase4()
+                GameAudio.onKingPhase4()
                 gameObject.hp = gameObject.maxHp
                 gameObject.spriteName = GameSprites.THE_KING_ON_FOOT
                 gameObject.spriteWidth = 22
@@ -471,7 +545,11 @@ fun createTheKing(): GameObject {
                         if (rainTimer > 300.0) {
                             rainTimer = 0.0
                             val game = gameObject.gameSession as? Game ?: return
-                            game.spawn(createCorpse(), randomInt(game.stage.width.toInt()).toDouble(), game.stage.ceiling)
+                            game.spawn(
+                                createCorpse(),
+                                randomInt(game.stage.width.toInt()).toDouble(),
+                                game.stage.ceiling
+                            )
                         }
                     }
                 }
