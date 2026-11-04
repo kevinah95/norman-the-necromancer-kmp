@@ -81,6 +81,11 @@ tasks:
     cmds:
       - ./gradlew :shared:jvmTest
 
+  coverage:
+    desc: "Ejecuta las pruebas y genera el reporte de cobertura con Kotlinx Kover"
+    cmds:
+      - ./gradlew :shared:jvmTest :shared:koverLog :shared:koverHtmlReport :shared:koverXmlReport
+
   build:
     desc: "Compila todos los módulos (Desktop, Android, Web JS y Wasm)"
     cmds:

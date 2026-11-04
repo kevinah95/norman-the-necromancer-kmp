@@ -55,12 +55,14 @@ fun vectorFromAngle(radians: Double): Pair<Double, Double> =
 
 fun vectorToAngle(x: Double, y: Double): Double = atan2(y, x)
 
-fun randomInt(max: Int): Int = if (max <= 0) 0 else Random.nextInt(max)
+var gameRandom: Random = Random.Default
 
-fun randomInt(min: Int, max: Int): Int = if (max <= min) min else Random.nextInt(min, max)
+fun randomInt(max: Int, random: Random = gameRandom): Int = if (max <= 0) 0 else random.nextInt(max)
 
-fun randomFloat(max: Double = 1.0): Double = Random.nextDouble() * max
+fun randomInt(min: Int, max: Int, random: Random = gameRandom): Int = if (max <= min) min else random.nextInt(min, max)
 
-fun randomRange(base: Double, spread: Double): Double = base + Random.nextDouble() * spread
+fun randomFloat(max: Double = 1.0, random: Random = gameRandom): Double = random.nextDouble() * max
 
-fun <T> List<T>.randomElement(): T = this[Random.nextInt(size)]
+fun randomRange(base: Double, spread: Double, random: Random = gameRandom): Double = base + random.nextDouble() * spread
+
+fun <T> List<T>.randomElement(random: Random = gameRandom): T = this[random.nextInt(size)]

@@ -126,7 +126,7 @@ class WorldRenderer(
         game: Game,
         shakeX: Double,
         shakeY: Double,
-        touchAimActive: Boolean = false
+        touchAimActive: Boolean
     ) {
         val pt = game.getCastingPoint()
         gfx.drawSceneSprite(batch, ctx, GameSprites.RETICLE, pt.x - 3.5, pt.y - 3.5, shakeX, shakeY)

@@ -527,10 +527,13 @@ fun createTheKing(): GameObject {
                 gameObject.addBehaviour(enraged)
                 gameObject.addBehaviour(invulnerable)
                 marching.step *= -1.0
+                enraged.onDamage(damage)
+                invulnerable.onDamage(damage)
             } else if (phase == 3 && willDie) {
                 phase = 4
                 GameAudio.onKingPhase4()
                 gameObject.hp = gameObject.maxHp
+                damage.amount = 0
                 gameObject.spriteName = GameSprites.THE_KING_ON_FOOT
                 gameObject.spriteWidth = 22
                 gameObject.spriteHeight = 22

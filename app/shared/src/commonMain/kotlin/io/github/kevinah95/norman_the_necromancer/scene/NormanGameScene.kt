@@ -27,13 +27,13 @@ import korlibs.time.milliseconds
 import kotlin.math.atan2
 
 class NormanGameScene : Scene() {
-    private val renderer = GameRenderer()
-    private lateinit var game: Game
-    private var isPaused = false
-    private var touchAimActive = false
-    private var dialogueTimer = 0.0
-    private var dialogueCooldown = 0.0
-    private var normanIsBouncing = false
+    internal val renderer = GameRenderer()
+    internal lateinit var game: Game
+    internal var isPaused = false
+    internal var touchAimActive = false
+    internal var dialogueTimer = 0.0
+    internal var dialogueCooldown = 0.0
+    internal var normanIsBouncing = false
 
     override suspend fun SContainer.sceneInit() {
         GameAtlas.load()
@@ -53,14 +53,14 @@ class NormanGameScene : Scene() {
         }
         addChild(gameView)
 
+        // Setup touch and mouse controls
+        setupInput()
+
         // Main game update loop
         addUpdater { dt ->
             val dtMs = dt.milliseconds
             update(dtMs)
         }
-
-        // Setup touch and mouse controls
-        setupInput()
     }
 
     private fun initGame() {
@@ -277,8 +277,7 @@ class NormanGameScene : Scene() {
                     }
                     advanceIntroOrStart()
                 }
-                GameState.WIN -> advanceOutroOrRestart()
-                GameState.LOSE -> onLose()
+                GameState.WIN, GameState.LOSE -> handleConfirmAction()
                 GameState.PLAYING -> {
                     if (GameLayout.PAUSE_TOUCH_BOUNDS.contains(px, py)) {
                         isPaused = true
