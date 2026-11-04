@@ -130,7 +130,7 @@ object ShopManager {
         )
 
         // Add ritual items
-        val candidateRituals = availableRituals.filter { game.canAddRitual(it) }.shuffled()
+        val candidateRituals = availableRituals.filter { game.canAddRitual(it) }.shuffled(gameRandom)
         val rares = candidateRituals.filter { it.rarity == Rarity.RARE }
         val commons = candidateRituals.filter { it.rarity == Rarity.COMMON }
         val pool = (rares.take(1) + commons.take(2))

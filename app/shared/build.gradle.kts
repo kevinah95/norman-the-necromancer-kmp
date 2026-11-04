@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.androidMultiplatformLibrary)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
+    alias(libs.plugins.kover)
 }
 
 kotlin {
@@ -71,9 +72,29 @@ kotlin {
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
+            implementation(libs.kotlinx.coroutinesTest)
         }
         jsMain.dependencies {
             implementation(libs.wrappers.browser)
+        }
+    }
+}
+
+kover {
+    reports {
+        filters {
+            excludes {
+                // Excluir el entry point de la ventana y clases autogeneradas
+                classes(
+                    "MainKt",
+                    "*Module*",
+                    "*Assets*",
+                    "*NormanGameKt*",
+                    "*NormanActivity*",
+                    "*MainViewControllerKt*",
+                    "normanthenecromancer.shared.generated.resources.*"
+                )
+            }
         }
     }
 }

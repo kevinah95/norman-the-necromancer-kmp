@@ -30,7 +30,7 @@ object GameAudio {
     var enabled: Boolean = true
     private val scope = CoroutineScope(Dispatchers.Default)
 
-    private var musicStream: NormanMusicStream? = null
+    internal var musicStream: NormanMusicStream? = null
     private var soundChannel: SoundChannel? = null
     private var isPlaying = false
 
